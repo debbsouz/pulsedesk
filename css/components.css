@@ -25,8 +25,8 @@
 }
 
 .brand img {
-  width: 28px;
-  height: 28px;
+  width: 24px;
+  height: 24px;
 }
 
 .brand .name {
@@ -87,8 +87,21 @@
   gap: 12px;
 }
 
-.topbar-left .title {
-  font-size: 18px;
+.logo-inline {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--text);
+  text-decoration: none;
+}
+
+.logo-inline img {
+  width: 24px;
+  height: 24px;
+}
+
+.logo-inline .wordmark {
+  font-size: 16px;
   font-weight: 700;
 }
 

@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="pt-BR">
+<html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -11,7 +11,7 @@
   <div class="app">
     <aside class="sidebar">
       <div class="brand">
-        <img src="../assets/logo.svg" alt="PulseDesk">
+        <img src="../assets/logo.svg" alt="PulseDesk logo">
         <span class="name">PulseDesk</span>
       </div>
       <nav class="nav">
@@ -25,48 +25,51 @@
     <div class="content">
       <header class="topbar">
         <div class="topbar-left">
-          <span class="title">PulseDesk</span>
+          <a class="logo-inline" href="./dashboard.html">
+            <img src="../assets/logo.svg" alt="PulseDesk logo">
+            <span class="wordmark">PulseDesk</span>
+          </a>
         </div>
         <div class="topbar-right">
           <div class="avatar">U</div>
         </div>
       </header>
       <main class="main">
-        <h1 class="section-title">Novo Ticket</h1>
+        <h1 class="section-title">New Ticket</h1>
         <form class="form">
           <div class="field">
-            <label class="label" for="subject">Assunto</label>
-            <input class="input" id="subject" type="text" placeholder="Assunto">
+            <label class="label" for="subject">Subject</label>
+            <input class="input" id="subject" type="text" placeholder="Subject">
           </div>
           <div class="field">
-            <label class="label" for="description">Descrição</label>
-            <textarea class="textarea" id="description" placeholder="Descrição"></textarea>
+            <label class="label" for="description">Description</label>
+            <textarea class="textarea" id="description" placeholder="Description"></textarea>
           </div>
           <div class="field">
-            <label class="label" for="category">Categoria</label>
+            <label class="label" for="category">Category</label>
             <select class="select" id="category">
-              <option value="">Selecione</option>
-              <option>Suporte</option>
-              <option>Financeiro</option>
+              <option value="">Select</option>
+              <option>Support</option>
+              <option>Billing</option>
               <option>Bug</option>
             </select>
           </div>
           <div class="field">
-            <label class="label" for="priority">Prioridade</label>
+            <label class="label" for="priority">Priority</label>
             <select class="select" id="priority">
-              <option value="">Selecione</option>
-              <option>Baixa</option>
-              <option>Média</option>
-              <option>Alta</option>
+              <option value="">Select</option>
+              <option>Low</option>
+              <option>Medium</option>
+              <option>High</option>
             </select>
           </div>
           <div class="field">
-            <label class="label" for="attachment">Anexo</label>
+            <label class="label" for="attachment">Attachment</label>
             <input class="input" id="attachment" type="file">
           </div>
           <div class="actions">
-            <button class="button" type="button">Enviar</button>
-            <a class="button secondary" href="./tickets.html">Cancelar</a>
+            <button class="button" type="button">Submit</button>
+            <a class="button secondary" href="./tickets.html">Cancel</a>
           </div>
         </form>
       </main>
