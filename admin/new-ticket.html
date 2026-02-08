@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>PulseDesk · New Ticket</title>
+  <link rel="stylesheet" href="../css/base.css">
+  <link rel="stylesheet" href="../css/components.css">
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="brand">
+        <img src="../assets/logo.svg" alt="PulseDesk">
+        <span class="name">PulseDesk</span>
+      </div>
+      <nav class="nav">
+        <a href="./dashboard.html">Dashboard</a>
+        <a href="./tickets.html">Tickets</a>
+        <a class="active" href="./new-ticket.html">New Ticket</a>
+        <a href="#">Settings</a>
+        <a href="#">Logout</a>
+      </nav>
+    </aside>
+    <div class="content">
+      <header class="topbar">
+        <div class="topbar-left">
+          <span class="title">PulseDesk</span>
+        </div>
+        <div class="topbar-right">
+          <div class="avatar">U</div>
+        </div>
+      </header>
+      <main class="main">
+        <h1 class="section-title">Novo Ticket</h1>
+        <form class="form">
+          <div class="field">
+            <label class="label" for="subject">Assunto</label>
+            <input class="input" id="subject" type="text" placeholder="Assunto">
+          </div>
+          <div class="field">
+            <label class="label" for="description">Descrição</label>
+            <textarea class="textarea" id="description" placeholder="Descrição"></textarea>
+          </div>
+          <div class="field">
+            <label class="label" for="category">Categoria</label>
+            <select class="select" id="category">
+              <option value="">Selecione</option>
+              <option>Suporte</option>
+              <option>Financeiro</option>
+              <option>Bug</option>
+            </select>
+          </div>
+          <div class="field">
+            <label class="label" for="priority">Prioridade</label>
+            <select class="select" id="priority">
+              <option value="">Selecione</option>
+              <option>Baixa</option>
+              <option>Média</option>
+              <option>Alta</option>
+            </select>
+          </div>
+          <div class="field">
+            <label class="label" for="attachment">Anexo</label>
+            <input class="input" id="attachment" type="file">
+          </div>
+          <div class="actions">
+            <button class="button" type="button">Enviar</button>
+            <a class="button secondary" href="./tickets.html">Cancelar</a>
+          </div>
+        </form>
+      </main>
+    </div>
+  </div>
+</body>
+</html>
