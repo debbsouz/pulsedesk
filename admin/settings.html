@@ -120,10 +120,7 @@
     var $importBtn = document.getElementById("import-json");
     var $importErr = document.getElementById("import-error");
     var $importSuccessLink = document.getElementById("import-success-link");
-    function toast(msg){
-      $toast.innerHTML = "<div class='toast toast-success'>"+msg+"</div>";
-      setTimeout(function(){ $toast.innerHTML=""; }, 2000);
-    }
+    function toast(msg, type){ if (window.PulseDeskUI && window.PulseDeskUI.toast) window.PulseDeskUI.toast(msg, type); }
     function applyTheme(theme){
       document.documentElement.setAttribute("data-theme", theme==="dark" ? "dark" : "light");
     }
@@ -204,25 +201,34 @@
     document.getElementById("confirm-yes").addEventListener("click", doImport);
     document.getElementById("confirm-cancel").addEventListener("click", function(){ pendingImport=null; hideConfirm(); });
     $save.addEventListener("click", function(){
+      $save.disabled = true;
+      var prevText = $save.textContent; $save.textContent = "Saving...";
       var st = S.getSettings();
       st.agentName = ($name.value||"").trim() || "You";
       st.agentEmail = ($email.value||"").trim();
       S.saveSettings(st);
       toast("Profile saved");
+      $save.textContent = prevText; $save.disabled = false;
     });
     $apply.addEventListener("click", function(){
+      $apply.disabled = true; var prevText = $apply.textContent; $apply.textContent = "Applying...";
       var val = $theme.value || "light";
       S.setTheme(val);
       applyTheme(val);
       toast("Theme applied");
+      $apply.textContent = prevText; $apply.disabled = false;
     });
     $create.addEventListener("click", function(){
+      $create.disabled = true; var prev = $create.textContent; $create.textContent = "Creating...";
       var ok = S.createDemoData();
       toast(ok ? "Demo data created" : "Tickets already exist");
+      $create.textContent = prev; $create.disabled = false;
     });
     $clear.addEventListener("click", function(){
+      $clear.disabled = true; var prev = $clear.textContent; $clear.textContent = "Clearing...";
       S.clearTickets();
       toast("All tickets cleared");
+      $clear.textContent = prev; $clear.disabled = false;
     });
     init();
   })();

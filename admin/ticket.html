@@ -179,10 +179,7 @@
     function statusClass(v){ var m={open:"open", in_progress:"pending", resolved:"resolved", closed:"closed"}; return m[v]||"open"; }
     function priorityLabel(v){ var m={low:"Low", medium:"Medium", high:"High", urgent:"Urgent"}; return m[v]||v||""; }
     function priorityClass(v){ var m={low:"low", medium:"medium", high:"high", urgent:"urgent"}; return m[v]||"low"; }
-    function showToast(msg){
-      $toast.innerHTML = "<div class='toast toast-success'>" + msg + "</div>";
-      setTimeout(function(){ $toast.innerHTML=""; }, 2000);
-    }
+    function showToast(msg, type){ if (window.PulseDeskUI && window.PulseDeskUI.toast) window.PulseDeskUI.toast(msg, type); }
     function normalizeTicket(t){
       var subject = t.subject || t.title || "";
       var email = t.requesterEmail || "";
