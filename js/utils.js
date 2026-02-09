@@ -19,5 +19,26 @@
     d.setDate(d.getDate() - Number(n||0));
     return d.toISOString();
   }
-  w.PulseDeskUtils = { formatDuration, daysAgoISO };
+  function timeAgo(iso){
+    var t = new Date(iso).getTime();
+    if (isNaN(t)) return "";
+    var diff = Date.now() - t;
+    var s = Math.floor(diff/1000);
+    var m = Math.floor(s/60);
+    var h = Math.floor(m/60);
+    var d = Math.floor(h/24);
+    if (d > 0) return d + "d ago";
+    if (h > 0) return h + "h ago";
+    if (m > 0) return m + "m ago";
+    return s + "s ago";
+  }
+  function withinLastDays(iso, days){
+    if (!iso) return false;
+    var t = new Date(iso).getTime();
+    if (isNaN(t)) return false;
+    var since = new Date();
+    since.setDate(since.getDate() - Number(days||0));
+    return t >= since.getTime();
+  }
+  w.PulseDeskUtils = { formatDuration, daysAgoISO, timeAgo, withinLastDays };
 })(window);

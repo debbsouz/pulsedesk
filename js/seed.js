@@ -23,6 +23,7 @@
         { id: "c1", at: iso(new Date(now.getTime() - 1000 * 60 * 60 * 24 * 2 + 1000 * 60 * 30)), author: "Requester", text: "Cannot login on iPhone." },
         { id: "c2", at: iso(new Date(now.getTime() - 1000 * 60 * 60 * 24 * 2 + 1000 * 60 * 90)), author: "Agent", text: "We are investigating." }
       ],
+      firstAgentReplyAt: iso(new Date(now.getTime() - 1000 * 60 * 60 * 24 * 2 + 1000 * 60 * 90)),
       attachments: [
         { id: "a1", name: "details.txt", type: "text/plain", size: 5, dataUrl: "data:text/plain;base64,SGVsbG8=", uploadedAt: iso(new Date(now.getTime() - 1000 * 60 * 60 * 24 * 2 + 1000 * 60 * 95)) }
       ],
@@ -44,6 +45,7 @@
         { id: "c3", at: iso(new Date(now.getTime() - 1000 * 60 * 60 * 24 * 3 + 1000 * 60 * 15)), author: "Requester", text: "Totals seem wrong." },
         { id: "c4", at: iso(new Date(now.getTime() - 1000 * 60 * 60 * 24 * 3 + 1000 * 60 * 45)), author: "Agent", text: "Please share your invoice ID." }
       ],
+      firstAgentReplyAt: iso(new Date(now.getTime() - 1000 * 60 * 60 * 24 * 3 + 1000 * 60 * 45)),
       events: [
         { id: "e2", at: iso(new Date(now.getTime() - 1000 * 60 * 60 * 24 * 3 + 1000 * 60 * 45)), type: "status", from: "Open", to: "Pending" },
         { id: "e3", at: iso(new Date(now.getTime() - 1000 * 60 * 60 * 24 * 2 + 1000 * 60 * 10)), type: "assignee", from: "Unassigned", to: "John" }
@@ -73,6 +75,7 @@
       createdAt: iso(new Date(now.getTime() - 1000 * 60 * 60 * 24 * 1)),
       description: "Intermittent latency spikes observed in region us-east-1.",
       comments: [{ id: "c6", at: iso(new Date(now.getTime() - 1000 * 60 * 60 * 24 * 1 + 1000 * 60 * 25)), author: "Agent", text: "Monitoring latency now." }],
+      firstAgentReplyAt: iso(new Date(now.getTime() - 1000 * 60 * 60 * 24 * 1 + 1000 * 60 * 25)),
       events: [{ id: "e5", at: iso(new Date(now.getTime() - 1000 * 60 * 60 * 24 * 1 + 1000 * 60 * 25)), type: "assignee", from: "Unassigned", to: "Sarah" }],
       history: [{ at: iso(new Date(now.getTime() - 1000 * 60 * 60 * 24 * 1)), action: "created" }]
     },
@@ -86,6 +89,8 @@
       createdAt: iso(new Date(now.getTime() - 1000 * 60 * 60 * 24 * 10)),
       description: "CSV export produced malformed files.",
       comments: [{ id: "c7", at: iso(new Date(now.getTime() - 1000 * 60 * 60 * 24 * 9)), author: "Agent", text: "Fix deployed, please verify." }],
+      firstAgentReplyAt: iso(new Date(now.getTime() - 1000 * 60 * 60 * 24 * 9)),
+      resolvedAt: iso(new Date(now.getTime() - 1000 * 60 * 60 * 24 * 8)),
       events: [
         { id: "e6", at: iso(new Date(now.getTime() - 1000 * 60 * 60 * 24 * 9)), type: "status", from: "Pending", to: "Resolved" }
       ],
