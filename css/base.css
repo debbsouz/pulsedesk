@@ -17,6 +17,7 @@
   --space-12: 12px;
   --space-16: 16px;
   --space-24: 24px;
+  --content-max: 1160px;
 }
 
 *,
@@ -47,8 +48,8 @@ h1, h2, h3, h4, h5, h6 {
   letter-spacing: -0.01em;
 }
 
-h1 { font-size: 22px; }
-h2 { font-size: 18px; }
+h1 { font-size: 24px; }
+h2 { font-size: 20px; }
 h3 { font-size: 16px; }
 
 p {
