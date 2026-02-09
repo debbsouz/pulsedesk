@@ -24,6 +24,9 @@
         { id: "c1", at: iso(new Date(now.getTime() - 1000 * 60 * 60 * 24 * 2 + 1000 * 60 * 30)), author: "Requester", text: "Cannot login on iPhone." },
         { id: "c2", at: iso(new Date(now.getTime() - 1000 * 60 * 60 * 24 * 2 + 1000 * 60 * 90)), author: "Agent", text: "We are investigating." }
       ],
+      attachments: [
+        { id: "a1", name: "details.txt", type: "text/plain", size: 5, dataUrl: "data:text/plain;base64,SGVsbG8=", uploadedAt: iso(new Date(now.getTime() - 1000 * 60 * 60 * 24 * 2 + 1000 * 60 * 95)) }
+      ],
       events: [
         { id: "e1", at: iso(new Date(now.getTime() - 1000 * 60 * 60 * 24 * 2)), type: "status", from: "Open", to: "Open" }
       ],

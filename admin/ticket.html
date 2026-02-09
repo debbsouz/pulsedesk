@@ -93,8 +93,14 @@
               <label class="label" for="note">Internal Notes</label>
               <textarea class="textarea" id="note" placeholder="Add internal note"></textarea>
             </div>
+            <div class="field">
+              <label class="label" for="files">Add attachments</label>
+              <input class="input" id="files" type="file" multiple>
+              <div id="file-error" class="muted" aria-live="polite"></div>
+            </div>
             <div class="actions">
               <button class="button" id="save">Save changes</button>
+              <button class="button secondary" id="add-attachment">Add attachment</button>
               <a class="button secondary" href="./tickets.html">Back to Tickets</a>
             </div>
           </div>
@@ -162,6 +168,9 @@
     var $cText = document.getElementById("c-text");
     var $post = document.getElementById("post-comment");
     var $attachments = document.getElementById("attachments");
+    var $files = document.getElementById("files");
+    var $fileError = document.getElementById("file-error");
+    var $addAttachment = document.getElementById("add-attachment");
     function shortId(s) { s = String(s||""); return s.length>6?s.slice(-6):s; }
     function formatDate(s) { try { var d = new Date(s); return d.toLocaleString(); } catch(e){ return s||""; } }
     function statusLabel(v){ var m={open:"Open", in_progress:"Pending", resolved:"Resolved", closed:"Closed"}; return m[v]||v||""; }
@@ -258,11 +267,13 @@
     function renderAttachments(list){
       if (!list || list.length===0){ $attachments.innerHTML = "<div class='muted'>No attachments.</div>"; return; }
       var html = list.slice().sort(function(a,b){
-        return new Date(b.at).getTime() - new Date(a.at).getTime();
+        var ab = new Date(b.uploadedAt || b.at).getTime();
+        var aa = new Date(a.uploadedAt || a.at).getTime();
+        return ab - aa;
       }).map(function(a,i){
         return "<div style='display:flex;justify-content:space-between;align-items:center;margin-bottom:8px'>"
           +"<div><div><strong>"+(a.name||"")+"</strong></div>"
-          +"<div class='muted'>"+(a.type||"")+", "+prettySize(a.size)+" • "+formatDate(a.at)+"</div></div>"
+          +"<div class='muted'>"+(a.type||"")+", "+prettySize(a.size)+" • "+formatDate(a.uploadedAt || a.at)+"</div></div>"
           +"<div><button class='button secondary' data-url='"+(a.dataUrl||"")+"' data-type='"+(a.type||"")+"' data-name='"+(a.name||"")+"' onclick=''>Open</button></div>"
         +"</div>";
       }).join("");
@@ -359,13 +370,67 @@
         var t = S.getTicketById(id);
         if (!t){ saveDisabled($post,false); return; }
         var comments = Array.isArray(t.comments)? t.comments.slice() : [];
-        comments.push({ id: rid(), at: new Date().toISOString(), author: author, text: txt });
-        persistAndAnnounce({ id: id, comments: comments });
+        var at = new Date().toISOString();
+        comments.push({ id: rid(), at: at, author: author, text: txt });
+        var events = Array.isArray(t.events)? t.events.slice() : [];
+        events.push({ id: "e_"+Date.now().toString(36), at: at, type: "comment", author: author, preview: txt.slice(0,50) });
+        var updates = { id: id, comments: comments, events: events };
+        var isAgent = String(author).toLowerCase() === "agent";
+        if (!t.firstAgentReplyAt && isAgent) {
+          updates.firstAgentReplyAt = at;
+        }
+        persistAndAnnounce(updates);
         showToast("Comment posted");
         $cText.value = "";
         $cText.focus();
         saveDisabled($post, false);
       }, 300);
+    });
+    function readFilesAsDataUrls(files, cb){
+      var out = [];
+      var i = 0;
+      function next(){
+        if (i >= files.length) { cb(out); return; }
+        var f = files[i++];
+        var reader = new FileReader();
+        reader.onload = function(e){
+          out.push({ name: f.name, type: f.type || "application/octet-stream", size: f.size, dataUrl: e.target.result });
+          next();
+        };
+        reader.onerror = function(){ next(); };
+        reader.readAsDataURL(f);
+      }
+      next();
+    }
+    $addAttachment.addEventListener("click", function(){
+      var files = $files.files;
+      if (!files || files.length===0){ $files.focus(); return; }
+      var tooBig = false;
+      for (var i=0;i<files.length;i++){
+        if (files[i].size > 2 * 1024 * 1024) { tooBig = true; break; }
+      }
+      if (tooBig){
+        $fileError.textContent = "Each file must be 2MB or less.";
+        return;
+      }
+      $fileError.textContent = "";
+      saveDisabled($addAttachment, true);
+      var at = new Date().toISOString();
+      readFilesAsDataUrls(files, function(items){
+        var t = S.getTicketById(id);
+        if (!t){ saveDisabled($addAttachment,false); return; }
+        var attachments = Array.isArray(t.attachments)? t.attachments.slice() : [];
+        var events = Array.isArray(t.events)? t.events.slice() : [];
+        items.forEach(function(it){
+          var a = { id: "a_"+Date.now().toString(36)+Math.random().toString(36).slice(2,6), name: it.name, type: it.type, size: it.size, dataUrl: it.dataUrl, uploadedAt: new Date().toISOString() };
+          attachments.push(a);
+          events.push({ id: "e_"+Date.now().toString(36), at: at, type: "attachment", name: it.name, size: it.size });
+        });
+        persistAndAnnounce({ id: id, attachments: attachments, events: events });
+        showToast("Attachments added");
+        $files.value = "";
+        saveDisabled($addAttachment, false);
+      });
     });
     function openImagePreview(url, name){
       var overlay = document.getElementById("preview-overlay");
