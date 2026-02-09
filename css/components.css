@@ -152,6 +152,19 @@
   margin-bottom: 8px;
 }
 
+.filters {
+  display: grid;
+  grid-template-columns: 1fr repeat(2, 180px) 140px;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+@media (max-width: 800px) {
+  .filters {
+    grid-template-columns: 1fr;
+  }
+}
+
 .table {
   width: 100%;
   border-collapse: collapse;
@@ -164,6 +177,25 @@
   padding: 12px 10px;
   border-bottom: 1px solid var(--border);
 }
+
+.badge {
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  border: 1px solid var(--border);
+}
+
+.badge-status.open { background: #ecfeff; color: #0ea5e9; border-color: #a5f3fc; }
+.badge-status.pending { background: #fff7ed; color: #f59e0b; border-color: #fde68a; }
+.badge-status.resolved { background: #f0fdf4; color: #22c55e; border-color: #bbf7d0; }
+.badge-status.closed { background: #f4f4f5; color: #6b7280; border-color: #e4e4e7; }
+
+.badge-priority.low { background: #f1f5f9; color: #64748b; border-color: #e2e8f0; }
+.badge-priority.medium { background: #eef2ff; color: #6366f1; border-color: #e0e7ff; }
+.badge-priority.high { background: #fee2e2; color: #ef4444; border-color: #fecaca; }
+.badge-priority.urgent { background: #fff1f2; color: #e11d48; border-color: #fecdd3; }
 
 .table tbody td {
   padding: 14px 10px;

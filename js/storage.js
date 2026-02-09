@@ -1,5 +1,5 @@
 (function (w) {
-  const KEY = "pulsedesk:tickets";
+  const KEY = "pulseDesk:tickets";
   function getTickets() {
     const s = localStorage.getItem(KEY);
     if (!s) return [];
