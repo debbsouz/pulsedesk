@@ -78,6 +78,24 @@
             </div>
             <p class="muted">Clearing data removes tickets only. Settings are preserved.</p>
           </div>
+          <div class="card">
+            <div class="card-title">Backup & Restore</div>
+            <div class="form">
+              <div class="actions">
+                <button class="button" id="export-json">Export tickets (.json)</button>
+              </div>
+              <div class="field">
+                <label class="label" for="import-file">Import tickets (JSON)</label>
+                <input class="input" id="import-file" type="file" accept=".json,application/json">
+                <div id="import-error" class="muted" aria-live="polite"></div>
+              </div>
+              <div class="actions">
+                <button class="button secondary" id="import-json">Import tickets</button>
+                <a id="import-success-link" class="button" href="./tickets.html" style="display:none">Go to Tickets</a>
+              </div>
+              <p class="muted">Import restores tickets from a JSON backup. Existing tickets will be replaced after confirmation.</p>
+            </div>
+          </div>
         </div>
       </main>
     </div>
@@ -97,6 +115,11 @@
     var $create = document.getElementById("create-demo");
     var $clear = document.getElementById("clear-data");
     var $toast = document.getElementById("settings-toast");
+    var $export = document.getElementById("export-json");
+    var $importFile = document.getElementById("import-file");
+    var $importBtn = document.getElementById("import-json");
+    var $importErr = document.getElementById("import-error");
+    var $importSuccessLink = document.getElementById("import-success-link");
     function toast(msg){
       $toast.innerHTML = "<div class='toast toast-success'>"+msg+"</div>";
       setTimeout(function(){ $toast.innerHTML=""; }, 2000);
@@ -111,6 +134,75 @@
       $theme.value = st.theme || "light";
       applyTheme(st.theme);
     }
+    function ymd(date){
+      var d = date || new Date();
+      var y = d.getFullYear();
+      var m = String(d.getMonth()+1).padStart(2,"0");
+      var day = String(d.getDate()).padStart(2,"0");
+      return y+"-"+m+"-"+day;
+    }
+    $export.addEventListener("click", function(){
+      var data = {
+        version: 1,
+        exportedAt: new Date().toISOString(),
+        tickets: S.getTickets()
+      };
+      var blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+      var a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = "pulsedesk-tickets-"+ymd(new Date())+".json";
+      document.body.appendChild(a);
+      a.click();
+      setTimeout(function(){ URL.revokeObjectURL(a.href); a.remove(); }, 0);
+      toast("Exported");
+    });
+    function validateImportShape(obj){
+      if (!obj || typeof obj!=="object") return false;
+      if (!Array.isArray(obj.tickets)) return false;
+      for (var i=0;i<obj.tickets.length;i++){
+        var t = obj.tickets[i] || {};
+        if (!t.id || !t.createdAt || !t.status || !t.priority || !(t.subject || t.title)) return false;
+      }
+      return true;
+    }
+    var pendingImport = null;
+    $importBtn.addEventListener("click", function(){
+      $importErr.textContent = "";
+      $importSuccessLink.style.display = "none";
+      var f = $importFile.files && $importFile.files[0];
+      if (!f){ $importErr.textContent = "Please choose a JSON file."; return; }
+      var name = String(f.name||"");
+      if (name.slice(-5).toLowerCase() !== ".json"){ $importErr.textContent = "Only .json files are accepted."; return; }
+      var reader = new FileReader();
+      reader.onload = function(e){
+        var text = String(e.target.result||"");
+        var obj;
+        try { obj = JSON.parse(text); } catch(err){ $importErr.textContent = "Invalid JSON format."; return; }
+        if (!validateImportShape(obj)){ $importErr.textContent = "Invalid backup structure."; return; }
+        pendingImport = obj.tickets;
+        showConfirm();
+      };
+      reader.onerror = function(){ $importErr.textContent = "Failed to read file."; };
+      reader.readAsText(f);
+    });
+    function showConfirm(){
+      var overlay = document.getElementById("confirm-overlay");
+      overlay.style.display = "flex";
+    }
+    function hideConfirm(){
+      var overlay = document.getElementById("confirm-overlay");
+      overlay.style.display = "none";
+    }
+    function doImport(){
+      if (!pendingImport) return;
+      S.saveTickets(pendingImport);
+      pendingImport = null;
+      hideConfirm();
+      toast("Import successful");
+      $importSuccessLink.style.display = "inline-flex";
+    }
+    document.getElementById("confirm-yes").addEventListener("click", doImport);
+    document.getElementById("confirm-cancel").addEventListener("click", function(){ pendingImport=null; hideConfirm(); });
     $save.addEventListener("click", function(){
       var st = S.getSettings();
       st.agentName = ($name.value||"").trim() || "You";
@@ -135,5 +227,18 @@
     init();
   })();
 </script>
+<div id="confirm-overlay" class="modal-overlay" aria-hidden="true">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="confirm-title" onclick="event.stopPropagation()">
+    <div class="modal-header">
+      <div id="confirm-title">Confirm Import</div>
+      <button class="button secondary" id="confirm-cancel">Cancel</button>
+    </div>
+    <p>Importing will replace existing tickets with the ones from the backup. Continue?</p>
+    <div style="height:8px"></div>
+    <div class="actions">
+      <button class="button" id="confirm-yes">Confirm import</button>
+    </div>
+  </div>
+</div>
 </body>
 </html>
