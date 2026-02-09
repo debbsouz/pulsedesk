@@ -62,6 +62,7 @@
                 <th>Subject</th>
                 <th>Priority</th>
                 <th>Status</th>
+                <th>Assignee</th>
                 <th>Created</th>
                 <th>Actions</th>
               </tr>
@@ -152,6 +153,7 @@
         var slabel = statusLabel(t.status);
         var scls = statusClass(t.status);
         var created = formatDate(t.createdAt);
+        var assignee = t.assignee ? String(t.assignee) : "Unassigned";
         var href = "./ticket.html?id=" + encodeURIComponent(String(t.id));
         return (
           "<tr>" +
@@ -159,6 +161,7 @@
           "<td>" + (t.title || "") + "</td>" +
           "<td><span class='badge badge-priority " + pcls + "'>" + plabel + "</span></td>" +
           "<td><span class='badge badge-status " + scls + "'>" + slabel + "</span></td>" +
+          "<td>" + assignee + "</td>" +
           "<td>" + created + "</td>" +
           "<td><a class='button secondary' href='" + href + "'>View</a></td>" +
           "</tr>"

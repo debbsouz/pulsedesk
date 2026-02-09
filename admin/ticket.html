@@ -72,6 +72,16 @@
               </select>
             </div>
             <div class="field">
+              <label class="label" for="assignee">Assign to</label>
+              <select class="select" id="assignee">
+                <option value="">Unassigned</option>
+                <option>John</option>
+                <option>Anna</option>
+                <option>Mike</option>
+                <option>Sarah</option>
+              </select>
+            </div>
+            <div class="field">
               <label class="label" for="note">Internal Notes</label>
               <textarea class="textarea" id="note" placeholder="Add internal note"></textarea>
             </div>
@@ -108,6 +118,7 @@
     var $desc = document.getElementById("desc");
     var $note = document.getElementById("note");
     var $status = document.getElementById("status");
+    var $assignee = document.getElementById("assignee");
     var $priority = null;
     var $save = document.getElementById("save");
     var $hist = document.getElementById("history");
@@ -139,6 +150,7 @@
         requesterEmail: email,
         priority: t.priority || "low",
         status: t.status || "open",
+        assignee: t.assignee || "",
         internalNote: t.internalNote || "",
         history: mapped
       };
@@ -159,6 +171,7 @@
       $desc.textContent = t.description || "—";
       $note.value = t.internalNote || "";
       $status.value = t.status;
+      $assignee.value = t.assignee || "";
       renderHistory(t.history);
     }
     function renderHistory(list){
@@ -186,6 +199,7 @@
     $save.addEventListener("click", function(){
       saveDisabled($save, true);
       var st = $status.value;
+      var asn = $assignee.value || "";
       var noteVal = $note.value || "";
       setTimeout(function(){
         var t = S.getTicketById(id);
@@ -194,10 +208,13 @@
         if (String(t.status) !== String(st)){
           hist.push({ type: "status", message: "Status changed to "+statusLabel(st), at: new Date().toISOString() });
         }
+        if (String(t.assignee || "") !== String(asn)){
+          hist.push({ type: "assignee", message: "Assigned to "+(asn || "Unassigned"), at: new Date().toISOString() });
+        }
         if (String(t.internalNote || "") !== String(noteVal)){
           hist.push({ type: "note", message: "Internal note updated", at: new Date().toISOString() });
         }
-        persistAndAnnounce({ id: id, status: st, internalNote: noteVal, history: hist });
+        persistAndAnnounce({ id: id, status: st, assignee: asn, internalNote: noteVal, history: hist });
         $sumStatus.innerHTML = "<span class='badge badge-status "+statusClass(st)+"'>"+statusLabel(st)+"</span>";
         $badges.innerHTML = "<span class='badge badge-status "+statusClass(st)+"'>"+statusLabel(st)+"</span>";
         saveDisabled($save, false);
