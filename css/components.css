@@ -271,7 +271,8 @@
 .select,
 .textarea {
   width: 100%;
-  padding: 12px 14px;
+  padding: 10px 14px;
+  min-height: 40px;
   border: 1px solid var(--border);
   border-radius: 12px;
   background: #fff;
@@ -290,15 +291,26 @@
   box-shadow: var(--focus-ring);
   border-color: rgba(37, 99, 235, 0.30);
 }
+.input.error,
+.select.error,
+.textarea.error {
+  border-color: #ef4444;
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.20);
+}
+.error-text {
+  color: #ef4444;
+  font-size: 12px;
+}
 
 .actions {
   display: flex;
-  gap: 12px;
+  gap: var(--space-12);
 }
 
 .button[disabled] {
   opacity: 0.6;
   cursor: not-allowed;
+  filter: saturate(0.7);
 }
 
 .button {
@@ -320,6 +332,14 @@
   background: rgba(37, 99, 235, 0.10);
   color: var(--primary);
   border-color: rgba(37, 99, 235, 0.18);
+}
+.button.ghost {
+  background: transparent;
+  color: var(--primary);
+  border-color: rgba(37, 99, 235, 0.30);
+}
+.button.ghost:hover {
+  background: rgba(37, 99, 235, 0.08);
 }
 .table .button.secondary {
   height: 32px;
