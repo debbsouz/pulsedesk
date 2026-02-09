@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>PulseDesk · Settings</title>
+  <link rel="stylesheet" href="../css/tokens.css">
+  <link rel="stylesheet" href="../css/base.css">
+  <link rel="stylesheet" href="../css/components.css">
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="brand">
+        <img src="../assets/logo.svg" alt="PulseDesk logo">
+        <span class="name">PulseDesk</span>
+      </div>
+      <nav class="nav">
+        <a href="./dashboard.html">Dashboard</a>
+        <a href="./tickets.html">Tickets</a>
+        <a href="./new-ticket.html">New Ticket</a>
+        <a class="active" href="./settings.html">Settings</a>
+        <a href="#">Logout</a>
+      </nav>
+    </aside>
+    <div class="content">
+      <header class="topbar">
+        <div class="topbar-left">
+          <a class="logo-inline" href="./dashboard.html">
+            <img src="../assets/logo.svg" alt="PulseDesk logo">
+            <span class="wordmark">PulseDesk</span>
+          </a>
+        </div>
+        <div class="topbar-right">
+          <div class="avatar">U</div>
+        </div>
+      </header>
+      <main class="main">
+        <h1 class="section-title">Settings</h1>
+        <div id="settings-toast" aria-live="polite" aria-atomic="true"></div>
+        <div class="cards">
+          <div class="card">
+            <div class="card-title">Profile</div>
+            <div class="form">
+              <div class="field">
+                <label class="label" for="agent-name">Agent Name</label>
+                <input class="input" id="agent-name" type="text" placeholder="Your name">
+              </div>
+              <div class="field">
+                <label class="label" for="agent-email">Agent Email</label>
+                <input class="input" id="agent-email" type="email" placeholder="you@example.com">
+              </div>
+              <div class="actions">
+                <button class="button" id="save-profile">Save</button>
+              </div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-title">Preferences</div>
+            <div class="form">
+              <div class="field">
+                <label class="label" for="theme">Theme</label>
+                <select class="select" id="theme">
+                  <option value="light">Light</option>
+                  <option value="dark">Dark</option>
+                </select>
+              </div>
+              <div class="actions">
+                <button class="button secondary" id="apply-theme">Apply</button>
+              </div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-title">Data Management</div>
+            <div class="actions">
+              <button class="button secondary" id="create-demo">Create demo data</button>
+              <button class="button" id="clear-data">Clear all data</button>
+            </div>
+            <p class="muted">Clearing data removes tickets only. Settings are preserved.</p>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+<script src="../js/app.js"></script>
+<script src="../js/storage.js"></script>
+<script src="../js/seed.js"></script>
+<script>
+  (function(){
+    var S = window.PulseDeskStorage;
+    if (!S) return;
+    var $name = document.getElementById("agent-name");
+    var $email = document.getElementById("agent-email");
+    var $save = document.getElementById("save-profile");
+    var $theme = document.getElementById("theme");
+    var $apply = document.getElementById("apply-theme");
+    var $create = document.getElementById("create-demo");
+    var $clear = document.getElementById("clear-data");
+    var $toast = document.getElementById("settings-toast");
+    function toast(msg){
+      $toast.innerHTML = "<div class='toast toast-success'>"+msg+"</div>";
+      setTimeout(function(){ $toast.innerHTML=""; }, 2000);
+    }
+    function applyTheme(theme){
+      document.documentElement.setAttribute("data-theme", theme==="dark" ? "dark" : "light");
+    }
+    function init(){
+      var st = S.getSettings();
+      $name.value = st.agentName || "";
+      $email.value = st.agentEmail || "";
+      $theme.value = st.theme || "light";
+      applyTheme(st.theme);
+    }
+    $save.addEventListener("click", function(){
+      var st = S.getSettings();
+      st.agentName = ($name.value||"").trim() || "You";
+      st.agentEmail = ($email.value||"").trim();
+      S.saveSettings(st);
+      toast("Profile saved");
+    });
+    $apply.addEventListener("click", function(){
+      var val = $theme.value || "light";
+      S.setTheme(val);
+      applyTheme(val);
+      toast("Theme applied");
+    });
+    $create.addEventListener("click", function(){
+      var ok = S.createDemoData();
+      toast(ok ? "Demo data created" : "Tickets already exist");
+    });
+    $clear.addEventListener("click", function(){
+      S.clearTickets();
+      toast("All tickets cleared");
+    });
+    init();
+  })();
+</script>
+</body>
+</html>

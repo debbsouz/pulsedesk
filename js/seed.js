@@ -1,16 +1,15 @@
 (function () {
   var S = window.PulseDeskStorage;
   if (!S) return;
-  var existing = S.getTickets();
-  if (existing && existing.length > 0) return;
   function rid() {
     return "t_" + Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
   }
   function iso(d) {
     return d.toISOString();
   }
-  var now = new Date();
-  var tickets = [
+  function buildDemo(){
+    var now = new Date();
+    return [
     {
       id: rid(),
       title: "Login issue on mobile",
@@ -111,6 +110,12 @@
       ],
       history: [{ at: iso(new Date(now.getTime() - 1000 * 60 * 60 * 24 * 4)), action: "created" }]
     }
-  ];
-  S.saveTickets(tickets);
+    ];
+  }
+  window.PulseDeskSeedCreate = function(){
+    return buildDemo();
+  };
+  var existing = S.getTickets();
+  if (existing && existing.length > 0) return;
+  S.saveTickets(buildDemo());
 })();

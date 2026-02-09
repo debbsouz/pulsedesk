@@ -1,0 +1,9 @@
+/* Theme tokens; base.css defines defaults. Dark overrides below. */
+[data-theme="dark"] {
+  --bg: #0b1220;
+  --text: #e5e7eb;
+  --muted: #93a2b7;
+  --border: #24303f;
+  --card-bg: #111827;
+  --primary: #60a5fa;
+}

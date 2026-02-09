@@ -1,5 +1,6 @@
 (function (w) {
   const KEY = "pulseDesk:tickets";
+  const SETTINGS_KEY = "pulseDesk:settings";
   function getTickets() {
     const s = localStorage.getItem(KEY);
     if (!s) return [];
@@ -14,6 +15,10 @@
     const data = Array.isArray(list) ? list : [];
     localStorage.setItem(KEY, JSON.stringify(data));
     return data;
+  }
+  function clearTickets(){
+    localStorage.setItem(KEY, JSON.stringify([]));
+    return [];
   }
   function addTicket(ticket) {
     const arr = getTickets();
@@ -58,5 +63,41 @@
     });
     return (limit && limit > 0) ? evts.slice(0, limit) : evts;
   }
-  w.PulseDeskStorage = { KEY, getTickets, saveTickets, addTicket, getTicketById, updateTicket, getRecentEvents };
+  function getSettings(){
+    const s = localStorage.getItem(SETTINGS_KEY);
+    if (!s) return { agentName: "You", agentEmail: "", theme: "light" };
+    try {
+      const v = JSON.parse(s);
+      return {
+        agentName: String(v && v.agentName || "You"),
+        agentEmail: String(v && v.agentEmail || ""),
+        theme: (v && v.theme)==="dark" ? "dark" : "light"
+      };
+    } catch (e){
+      return { agentName: "You", agentEmail: "", theme: "light" };
+    }
+  }
+  function saveSettings(settings){
+    const s = Object.assign({ agentName: "You", agentEmail: "", theme: "light" }, settings||{});
+    if (s.theme!=="dark") s.theme = "light";
+    localStorage.setItem(SETTINGS_KEY, JSON.stringify(s));
+    return s;
+  }
+  function getTheme(){ return getSettings().theme; }
+  function setTheme(theme){
+    const cur = getSettings();
+    cur.theme = theme==="dark" ? "dark" : "light";
+    return saveSettings(cur);
+  }
+  function createDemoData(){
+    const list = getTickets();
+    if (list && list.length>0) return false;
+    if (typeof w.PulseDeskSeedCreate === "function"){
+      const demo = w.PulseDeskSeedCreate();
+      saveTickets(demo);
+      return true;
+    }
+    return false;
+  }
+  w.PulseDeskStorage = { KEY, getTickets, saveTickets, addTicket, getTicketById, updateTicket, getRecentEvents, clearTickets, getSettings, saveSettings, getTheme, setTheme, createDemoData };
 })(window);
