@@ -1,4 +1,11 @@
-/* Theme tokens; base.css defines light defaults. Dark overrides below. */
+/* Theme tokens; extends base.css with additional palette */
+:root {
+  --primary-hover: #1e4fd6;
+  --primary-active: #1946c5;
+  --sidebar-fg: #e5e7eb;
+}
+
+/* Dark theme overrides */
 [data-theme="dark"] {
   --bg: #0b1220;
   --text: #e6edf7;
@@ -6,7 +13,10 @@
   --border: rgba(148, 163, 184, 0.14);
   --card-bg: #0f172a;
   --sidebar-bg: #0f172a;
+  --sidebar-fg: #e6edf7;
   --primary: #60a5fa;
+  --primary-hover: #4f9cf7;
+  --primary-active: #3f8ef4;
   --shadow: 0 10px 30px -10px rgba(2, 6, 23, 0.55), 0 8px 12px -8px rgba(2, 6, 23, 0.45);
   --shadow-soft: 0 6px 20px -10px rgba(2, 6, 23, 0.45);
   --focus-ring: 0 0 0 3px rgba(96, 165, 250, 0.35);

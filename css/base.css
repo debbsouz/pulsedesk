@@ -5,7 +5,8 @@
   --muted: #6b7280;
   --border: rgba(15, 23, 42, 0.08);
   --card-bg: #ffffff;
-  --sidebar-bg: #0f172a0a;
+  --sidebar-bg: #0f172a;
+  --sidebar-fg: #e5e7eb;
   --shadow: 0 10px 30px -10px rgba(2, 6, 23, 0.12), 0 8px 12px -8px rgba(2, 6, 23, 0.08);
   --shadow-soft: 0 6px 20px -10px rgba(2, 6, 23, 0.10);
   --focus-ring: 0 0 0 3px rgba(37, 99, 235, 0.20);
