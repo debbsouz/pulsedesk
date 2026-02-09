@@ -135,6 +135,13 @@
   margin-bottom: 18px;
 }
 
+.page-subtitle {
+  font-size: 14px;
+  color: var(--muted);
+  margin-top: -8px;
+  margin-bottom: 20px;
+}
+
 .cards {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
@@ -445,6 +452,14 @@
   padding: 24px 0;
 }
 
+.footer {
+  margin-top: 28px;
+  padding: 16px 0;
+  text-align: center;
+  color: var(--muted);
+  font-size: 12px;
+  border-top: 1px solid var(--border);
+}
 /* Micro-interactions keyframes */
 @keyframes page-in {
   from { opacity: 0; transform: translateY(8px); }
