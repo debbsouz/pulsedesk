@@ -203,19 +203,25 @@
 .table thead th {
   text-align: left;
   font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
   color: var(--muted);
   padding: 12px 12px;
   border-bottom: 1px solid var(--border);
 }
+.table thead th:last-child { text-align: right; }
 
 .badge {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   padding: 4px 10px;
+  min-height: 24px;
   border-radius: 999px;
   font-size: 12px;
   font-weight: 600;
   border: 1px solid var(--border);
-  box-shadow: 0 1px 0 rgba(2, 6, 23, 0.05) inset;
 }
 
 .badge-status.open { background: rgba(14,165,233,0.08); color: #0ea5e9; border-color: rgba(14,165,233,0.25); }
@@ -229,16 +235,17 @@
 .badge-priority.urgent { background: rgba(225,29,72,0.10); color: #e11d48; border-color: rgba(225,29,72,0.26); }
 
 .table tbody td {
-  padding: 16px 12px;
+  padding: 14px 12px;
   border-bottom: 1px solid var(--border);
 }
+.table tbody td:last-child { text-align: right; }
 
 .table tbody tr[data-clickable="true"] {
   cursor: pointer;
 }
 
 .table tbody tr:nth-child(even) td {
-  background: rgba(148,163,184,0.08);
+  background: rgba(148,163,184,0.06);
 }
 .table tbody tr:hover td {
   background: rgba(148,163,184,0.12);
@@ -313,6 +320,16 @@
   background: rgba(37, 99, 235, 0.10);
   color: var(--primary);
   border-color: rgba(37, 99, 235, 0.18);
+}
+.table .button.secondary {
+  height: 32px;
+  padding: 0 12px;
+  border-radius: 10px;
+  background: transparent;
+  border-color: rgba(37, 99, 235, 0.30);
+}
+.table .button.secondary:hover {
+  background: rgba(37, 99, 235, 0.08);
 }
 
 .button:hover {
