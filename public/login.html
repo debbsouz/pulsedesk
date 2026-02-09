@@ -53,45 +53,61 @@
     }
     .login-header {
       display: grid;
-      gap: 8px;
+      gap: 10px;
       justify-items: center;
       margin-bottom: 8px;
     }
     .login-header img {
-      width: 32px;
-      height: 32px;
+      width: 36px;
+      height: 36px;
     }
-    .login-title {
-      font-size: 18px;
-      font-weight: 800;
+    .login-subtitle {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--muted);
+    }
+    .login-brand {
+      font-size: 30px;
+      font-weight: 900;
+      letter-spacing: -0.01em;
       color: #0f172a;
+      line-height: 1.1;
     }
-    .input-with-toggle {
-      position: relative;
+    .input-with-icon { position: relative; }
+    .input-with-icon .input {
+      padding-right: 56px;
+      height: 44px;
+      line-height: 44px;
     }
-    .input-with-toggle .input {
-      padding-right: 44px;
-    }
-    .icon-toggle {
+    .toggle-password {
       position: absolute;
-      right: 8px;
+      right: 12px;
       top: 50%;
       transform: translateY(-50%);
       width: 36px;
-      height: 32px;
-      display: grid;
-      place-items: center;
-      border: 1px solid var(--border);
-      border-radius: 8px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       background: transparent;
-      color: var(--muted);
+      border: 0;
+      border-radius: 10px;
       cursor: pointer;
-      transition: background 160ms var(--ease), color 160ms var(--ease), border-color 160ms var(--ease);
+      color: var(--muted);
+      transition: background 160ms var(--ease), color 160ms var(--ease), box-shadow 160ms var(--ease);
     }
-    .icon-toggle:hover {
+    .toggle-password:hover {
       background: rgba(37, 99, 235, 0.08);
       color: var(--primary);
-      border-color: rgba(37, 99, 235, 0.30);
+    }
+    .toggle-password:focus-visible {
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.20);
+    }
+    .toggle-password svg {
+      display: block;
+      width: 18px;
+      height: 18px;
     }
     .login-actions {
       display: flex;
@@ -113,7 +129,8 @@
     }
     @media (max-width: 520px) {
       .login-card { padding: 20px; }
-      .login-title { font-size: 16px; }
+      .login-brand { font-size: 24px; }
+      .login-subtitle { font-size: 12px; }
       .login-shell {
         background:
           radial-gradient(420px 220px at 12% 10%, rgba(37,99,235,0.08), transparent 60%),
@@ -129,21 +146,24 @@
     <div class="login-card">
       <div class="login-header">
         <img src="../assets/logo.svg" alt="PulseDesk logo">
-        <div class="login-title">Sign in to PulseDesk</div>
+        <div class="login-subtitle">Sign in to</div>
+        <div class="login-brand">PulseDesk</div>
       </div>
       <form class="form" action="#" method="post" novalidate>
         <div class="field">
           <label class="label" for="email">Email</label>
           <input class="input" id="email" name="email" type="email" placeholder="you@company.com" autocomplete="email" required>
         </div>
-        <div class="field input-with-toggle">
+        <div class="field">
           <label class="label" for="password">Password</label>
-          <input class="input" id="password" name="password" type="password" placeholder="Enter your password" autocomplete="current-password" required>
-          <button type="button" id="toggle-pass" class="icon-toggle" aria-label="Show password" aria-pressed="false">
-            <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true">
-              <path fill="currentColor" d="M12 5c-7 0-10 7-10 7s3 7 10 7 10-7 10-7-3-7-10-7zm0 11a4 4 0 1 1 0-8 4 4 0 0 1 0 8z"/>
-            </svg>
-          </button>
+          <div class="input-with-icon">
+            <input class="input" id="password" name="password" type="password" placeholder="Enter your password" autocomplete="current-password" required>
+            <button type="button" id="toggle-pass" class="toggle-password" aria-label="Show password" aria-pressed="false">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path fill="currentColor" d="M12 5c-7 0-10 7-10 7s3 7 10 7 10-7 10-7-3-7-10-7zm0 11a4 4 0 1 1 0-8 4 4 0 0 1 0 8z"/>
+              </svg>
+            </button>
+          </div>
         </div>
         <div class="login-actions">
           <label class="remember" for="remember">
