@@ -39,7 +39,7 @@
         <div id="not-found" class="card" style="display:none">
           <h2>Ticket not found</h2>
           <div style="height:12px"></div>
-          <a class="button" href="./tickets.html">Back to tickets</a>
+          <a class="button" href="./dashboard.html">Back to dashboard</a>
         </div>
         <div id="detail" style="display:none">
           <div class="card" id="header-card">
@@ -51,6 +51,7 @@
             <div class="summary-grid">
               <div><div class="label">Subject</div><div id="sum-subject">—</div></div>
               <div><div class="label">Created</div><div id="sum-created">—</div></div>
+              <div><div class="label">Category</div><div id="sum-category">—</div></div>
               <div><div class="label">Priority</div><div id="sum-priority">—</div></div>
               <div><div class="label">Status</div><div id="sum-status">—</div></div>
               <div><div class="label">Requester Email</div><div id="sum-email">—</div></div>
@@ -61,34 +62,21 @@
             <div id="desc">—</div>
           </div>
           <div class="card">
-            <div class="card-title">Internal Notes</div>
-            <textarea class="textarea" id="note" placeholder="Add internal note"></textarea>
-            <div class="actions">
-              <button class="button" id="save-note">Save note</button>
-            </div>
-          </div>
-          <div class="card">
-            <div class="card-title">Status & Priority</div>
+            <div class="card-title">Update</div>
             <div class="field">
               <label class="label" for="status">Status</label>
               <select class="select" id="status">
                 <option value="open">Open</option>
                 <option value="in_progress">Pending</option>
                 <option value="resolved">Resolved</option>
-                <option value="closed">Closed</option>
               </select>
             </div>
             <div class="field">
-              <label class="label" for="priority">Priority</label>
-              <select class="select" id="priority">
-                <option value="low">Low</option>
-                <option value="medium">Medium</option>
-                <option value="high">High</option>
-                <option value="urgent">Urgent</option>
-              </select>
+              <label class="label" for="note">Internal Notes</label>
+              <textarea class="textarea" id="note" placeholder="Add internal note"></textarea>
             </div>
             <div class="actions">
-              <button class="button" id="save-sp">Save changes</button>
+              <button class="button" id="save">Save</button>
             </div>
           </div>
           <div class="card">
@@ -114,14 +102,14 @@
     var $sumSubject = document.getElementById("sum-subject");
     var $sumCreated = document.getElementById("sum-created");
     var $sumPriority = document.getElementById("sum-priority");
+    var $sumCategory = document.getElementById("sum-category");
     var $sumStatus = document.getElementById("sum-status");
     var $sumEmail = document.getElementById("sum-email");
     var $desc = document.getElementById("desc");
     var $note = document.getElementById("note");
     var $status = document.getElementById("status");
-    var $priority = document.getElementById("priority");
-    var $saveNote = document.getElementById("save-note");
-    var $saveSP = document.getElementById("save-sp");
+    var $priority = null;
+    var $save = document.getElementById("save");
     var $hist = document.getElementById("history");
     var $toast = document.getElementById("toast");
     function shortId(s) { s = String(s||""); return s.length>6?s.slice(-6):s; }
@@ -147,6 +135,7 @@
         createdAt: t.createdAt || new Date().toISOString(),
         subject: subject,
         description: t.description || "",
+        category: t.category || "",
         requesterEmail: email,
         priority: t.priority || "low",
         status: t.status || "open",
@@ -165,11 +154,11 @@
       $sumCreated.textContent = formatDate(t.createdAt);
       $sumPriority.innerHTML = "<span class='badge badge-priority "+priorityClass(t.priority)+"'>"+priorityLabel(t.priority)+"</span>";
       $sumStatus.innerHTML = "<span class='badge badge-status "+statusClass(t.status)+"'>"+statusLabel(t.status)+"</span>";
+      $sumCategory.textContent = t.category || "—";
       $sumEmail.textContent = t.requesterEmail || "—";
       $desc.textContent = t.description || "—";
       $note.value = t.internalNote || "";
       $status.value = t.status;
-      $priority.value = t.priority;
       renderHistory(t.history);
     }
     function renderHistory(list){
@@ -194,37 +183,24 @@
       var t = normalizeTicket(r);
       renderHistory(t.history);
     }
-    $saveNote.addEventListener("click", function(){
-      saveDisabled($saveNote, true);
-      var val = $note.value || "";
-      setTimeout(function(){
-        var t = S.getTicketById(id);
-        if (!t){ saveDisabled($saveNote,false); return; }
-        var hist = Array.isArray(t.history)? t.history : [];
-        hist.push({ type: "note", message: "Internal note updated", at: new Date().toISOString() });
-        persistAndAnnounce({ id: id, internalNote: val, history: hist });
-        saveDisabled($saveNote, false);
-      }, 500);
-    });
-    $saveSP.addEventListener("click", function(){
-      saveDisabled($saveSP, true);
+    $save.addEventListener("click", function(){
+      saveDisabled($save, true);
       var st = $status.value;
-      var pr = $priority.value;
+      var noteVal = $note.value || "";
       setTimeout(function(){
         var t = S.getTicketById(id);
-        if (!t){ saveDisabled($saveSP,false); return; }
+        if (!t){ saveDisabled($save,false); return; }
         var hist = Array.isArray(t.history)? t.history : [];
         if (String(t.status) !== String(st)){
           hist.push({ type: "status", message: "Status changed to "+statusLabel(st), at: new Date().toISOString() });
         }
-        if (String(t.priority) !== String(pr)){
-          hist.push({ type: "priority", message: "Priority changed to "+priorityLabel(pr), at: new Date().toISOString() });
+        if (String(t.internalNote || "") !== String(noteVal)){
+          hist.push({ type: "note", message: "Internal note updated", at: new Date().toISOString() });
         }
-        persistAndAnnounce({ id: id, status: st, priority: pr, history: hist });
+        persistAndAnnounce({ id: id, status: st, internalNote: noteVal, history: hist });
         $sumStatus.innerHTML = "<span class='badge badge-status "+statusClass(st)+"'>"+statusLabel(st)+"</span>";
-        $sumPriority.innerHTML = "<span class='badge badge-priority "+priorityClass(pr)+"'>"+priorityLabel(pr)+"</span>";
         $badges.innerHTML = "<span class='badge badge-status "+statusClass(st)+"'>"+statusLabel(st)+"</span>";
-        saveDisabled($saveSP, false);
+        saveDisabled($save, false);
       }, 500);
     });
     load();
