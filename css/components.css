@@ -127,6 +127,7 @@
 
 .main {
   padding: 28px;
+  animation: page-in 320ms var(--ease-out) both;
 }
 
 .section-title {
@@ -147,6 +148,7 @@
   border-radius: 16px;
   box-shadow: var(--shadow-soft);
   padding: 20px;
+  transition: transform 220ms var(--ease-out), box-shadow 220ms var(--ease-out);
 }
 
 .card-title {
@@ -155,6 +157,11 @@
   margin-bottom: 10px;
   text-transform: uppercase;
   letter-spacing: 0.08em;
+}
+
+.card:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow);
 }
 
 .filters {
@@ -208,6 +215,10 @@
   border-bottom: 1px solid var(--border);
 }
 
+.table tbody tr[data-clickable="true"] {
+  cursor: pointer;
+}
+
 .table tbody tr:nth-child(even) td {
   background: rgba(148,163,184,0.08);
 }
@@ -240,7 +251,7 @@
   border-radius: 12px;
   background: #fff;
   outline: none;
-  transition: border-color 160ms ease, box-shadow 160ms ease, background 160ms ease;
+  transition: border-color 160ms var(--ease), box-shadow 160ms var(--ease), background 160ms var(--ease);
 }
 
 .textarea {
@@ -277,7 +288,7 @@
   color: #fff;
   font-weight: 600;
   cursor: pointer;
-  transition: background 160ms ease, box-shadow 160ms ease, transform 80ms ease;
+  transition: background 160ms var(--ease), box-shadow 200ms var(--ease-out), transform 80ms var(--ease-in);
 }
 
 .button.secondary {
@@ -288,6 +299,8 @@
 
 .button:hover {
   background: #1e4fd6;
+  box-shadow: var(--shadow-soft);
+  transform: translateY(-0.5px);
 }
 .button:active {
   transform: translateY(0.5px);
@@ -346,13 +359,16 @@
 .toast {
   position: fixed;
   right: 20px;
-  bottom: 20px;
+  top: 20px;
   background: #10b981;
   color: #fff;
   padding: 10px 14px;
   border-radius: 12px;
   box-shadow: var(--shadow);
   z-index: 50;
+  opacity: 0;
+  transform: translateY(-6px);
+  animation: toast-in 220ms var(--ease-out) forwards, toast-out 220ms var(--ease-in) 1.8s forwards;
 }
 .toast-success {
   background: #10b981;
@@ -427,4 +443,37 @@
 .card .empty {
   text-align: center;
   padding: 24px 0;
+}
+
+/* Micro-interactions keyframes */
+@keyframes page-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes toast-in {
+  from { opacity: 0; transform: translateY(-6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes toast-out {
+  from { opacity: 1; transform: translateY(0); }
+  to { opacity: 0; transform: translateY(-6px); }
+}
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Loading simulation spinner on disabled buttons */
+.button[disabled]::after {
+  content: "";
+  width: 14px;
+  height: 14px;
+  margin-left: 8px;
+  border-radius: 50%;
+  border: 2px solid rgba(255,255,255,0.6);
+  border-top-color: #fff;
+  animation: spin 0.8s linear infinite;
+}
+.button.secondary[disabled]::after {
+  border-color: rgba(37,99,235,0.35);
+  border-top-color: var(--primary);
 }
