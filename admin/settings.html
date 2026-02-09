@@ -10,18 +10,44 @@
 </head>
 <body>
   <div class="app">
-    <aside class="sidebar">
+    <aside class="sidebar" aria-label="Primary">
       <div class="brand">
         <img src="../assets/logo.svg" alt="PulseDesk logo">
         <span class="name">PulseDesk</span>
       </div>
       <nav class="nav">
-        <a href="./dashboard.html">Dashboard</a>
-        <a href="./tickets.html">Tickets</a>
-        <a href="./new-ticket.html">New Ticket</a>
-        <a class="active" href="./settings.html">Settings</a>
-        <a href="#">Logout</a>
+        <a class="nav-item" href="./dashboard.html" aria-label="Dashboard" title="Dashboard"><span class="nav-ic" aria-hidden="true"><svg viewBox="0 0 24 24"><path fill="currentColor" d="M4 4h7v7H4V4zm9 0h7v5h-7V4zM4 13h7v7H4v-7zm9-2h7v9h-7v-9z"/></svg></span><span class="nav-label">Dashboard</span></a>
+        <a class="nav-item" href="./tickets.html" aria-label="Tickets" title="Tickets"><span class="nav-ic" aria-hidden="true"><svg viewBox="0 0 24 24"><path fill="currentColor" d="M4 6h16v10H7l-3 3V6z"/></svg></span><span class="nav-label">Tickets</span></a>
+        <a class="nav-item" href="./new-ticket.html" aria-label="New Ticket" title="New Ticket"><span class="nav-ic" aria-hidden="true"><svg viewBox="0 0 24 24"><path stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M12 5v14M5 12h14"/></svg></span><span class="nav-label">New Ticket</span></a>
+        <a class="nav-item" href="#" aria-label="Chats" title="Chats"><span class="nav-ic" aria-hidden="true"><svg viewBox="0 0 24 24"><path fill="currentColor" d="M4 5h16v10H7l-3 3V5z"/></svg></span><span class="nav-label">Chats</span></a>
+        <a class="nav-item" href="#" aria-label="Customers" title="Customers"><span class="nav-ic" aria-hidden="true"><svg viewBox="0 0 24 24"><path fill="currentColor" d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zm-7 8a7 7 0 0 1 14 0H5z"/></svg></span><span class="nav-label">Customers</span></a>
+        <a class="nav-item" href="#" aria-label="Resources" title="Resources"><span class="nav-ic" aria-hidden="true"><svg viewBox="0 0 24 24"><path fill="currentColor" d="M3 4h18v4H3V4zm0 6h18v4H3v-4zm0 6h18v4H3v-4z"/></svg></span><span class="nav-label">Resources</span></a>
+        <a class="nav-item" href="#" aria-label="Contracts" title="Contracts"><span class="nav-ic" aria-hidden="true"><svg viewBox="0 0 24 24"><path fill="currentColor" d="M6 3h12v18H6zM9 7h6v2H9zM9 11h6v2H9zM9 15h6v2H9z"/></svg></span><span class="nav-label">Contracts</span></a>
+        <a class="nav-item" href="#" aria-label="Reports" title="Reports"><span class="nav-ic" aria-hidden="true"><svg viewBox="0 0 24 24"><path fill="currentColor" d="M5 13h4v8H5v-8zm5-6h4v14h-4V7zm5 3h4v11h-4V10z"/></svg></span><span class="nav-label">Reports</span></a>
+        <a class="nav-item" href="#" aria-label="Schedule" title="Schedule"><span class="nav-ic" aria-hidden="true"><svg viewBox="0 0 24 24"><path fill="currentColor" d="M7 2h2v3h6V2h2v3h3v15H4V5h3V2zm0 7h10v9H7V9z"/></svg></span><span class="nav-label">Schedule</span></a>
+        <a class="nav-item" href="#" aria-label="Knowledge Base" title="Knowledge Base"><span class="nav-ic" aria-hidden="true"><svg viewBox="0 0 24 24"><path fill="currentColor" d="M4 5h14a2 2 0 0 1 2 2v12l-4-2-4 2-4-2-4 2V7a2 2 0 0 1 2-2z"/></svg></span><span class="nav-label">Knowledge Base</span></a>
+        <a class="nav-item" href="#" aria-label="Password Vault" title="Password Vault"><span class="nav-ic" aria-hidden="true"><svg viewBox="0 0 24 24"><path fill="currentColor" d="M12 3a6 6 0 0 0-6 6v3H5a2 2 0 0 0-2 2v5h18v-5a2 2 0 0 0-2-2h-1V9a6 6 0 0 0-6-6zm-2 9h4v3h-4v-3z"/></svg></span><span class="nav-label">Password Vault</span></a>
+        <a class="nav-item active" href="./settings.html" aria-label="Settings" title="Settings"><span class="nav-ic" aria-hidden="true"><svg viewBox="0 0 24 24"><path fill="currentColor" d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/></svg></span><span class="nav-label">Settings</span></a>
+        <a class="nav-item" href="#" aria-label="Logout" title="Logout"><span class="nav-ic" aria-hidden="true"><svg viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" d="M8 4h8v16H8"/><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M12 8l4 4-4 4M4 12h12"/></svg></span><span class="nav-label">Logout</span></a>
       </nav>
+      <div class="nav-cta">
+        <a class="new-ticket-cta" href="./new-ticket.html">New Ticket</a>
+      </div>
+      <div class="sidebar-footer">
+        <div class="footer-inner">
+          <div class="avatar">U</div>
+          <div class="user-text">
+            <div class="user-name">You</div>
+            <div class="user-email">you@example.com</div>
+          </div>
+          <button class="theme-btn" type="button" aria-label="Toggle theme" title="Toggle theme">
+            <svg viewBox="0 0 24 24" aria-hidden="true" class="theme-icon">
+              <path class="sun" fill="currentColor" d="M12 7a5 5 0 1 1 0 10 5 5 0 0 1 0-10zm0-4h1v3h-1V3zm0 15h1v3h-1v-3zM3 11h3v1H3v-1zm15 0h3v1h-3v-1zM5.64 5.64l.71-.71L8 6.58l-.71.71-1.65-1.65zm8.36 8.36l.71-.71 1.65 1.65-.71.71-1.65-1.65zm-8.36 0L6.99 13.6 8.64 15.25l-.71.71-1.65-1.65zm8.36-8.36l1.65-1.65.71.71-1.65 1.65-.71-.71z"/>
+              <path class="moon" fill="currentColor" d="M12 2c.7 0 1.38.08 2.03.23A8 8 0 1 0 12 22c-4.42 0-8-3.58-8-8 0-3.53 2.29-6.53 5.47-7.59A7 7 0 0 0 12 2z"/>
+            </svg>
+          </button>
+        </div>
+      </div>
     </aside>
     <div class="content">
       <header class="topbar">
@@ -32,6 +58,9 @@
           </a>
         </div>
         <div class="topbar-right">
+          <button id="sidebar-toggle" class="sidebar-toggle" type="button" aria-label="Toggle sidebar" aria-expanded="false">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M7 12h10M7 7h10M7 17h10"/></svg>
+          </button>
           <div class="avatar">U</div>
         </div>
       </header>
@@ -105,6 +134,7 @@
 <script src="../js/app.js"></script>
 <script src="../js/storage.js"></script>
 <script src="../js/seed.js"></script>
+<script src="../js/sidebar.js"></script>
 <script>
   (function(){
     var S = window.PulseDeskStorage;

@@ -68,7 +68,53 @@
     ensureToast();
     ensureToggle();
     highlightNav();
+    initSidebar();
     w.PulseDeskUI = UI;
+  }
+  function initSidebar(){
+    var sidebar = d.querySelector(".sidebar");
+    if (!sidebar) return;
+    var KEY = "pulseDesk:sidebarCollapsed";
+    var collapsedPref = localStorage.getItem(KEY);
+    var prefersCollapsed = collapsedPref==null ? true : (collapsedPref==="true");
+    function applyState(){
+      if (prefersCollapsed){
+        sidebar.classList.add("collapsed");
+        sidebar.classList.remove("expanded");
+        syncToggle(false);
+      } else {
+        sidebar.classList.add("expanded");
+        sidebar.classList.remove("collapsed");
+        syncToggle(true);
+      }
+    }
+    function syncToggle(expanded){
+      var btn = d.getElementById("sidebar-toggle");
+      if (btn){
+        btn.setAttribute("aria-expanded", String(!!expanded));
+      }
+    }
+    applyState();
+    sidebar.addEventListener("mouseenter", function(){
+      sidebar.classList.add("expanded");
+      sidebar.classList.remove("collapsed");
+      syncToggle(true);
+    });
+    sidebar.addEventListener("mouseleave", function(){
+      if (prefersCollapsed){
+        sidebar.classList.add("collapsed");
+        sidebar.classList.remove("expanded");
+        syncToggle(false);
+      }
+    });
+    var toggle = d.getElementById("sidebar-toggle");
+    if (toggle){
+      toggle.addEventListener("click", function(){
+        prefersCollapsed = !prefersCollapsed;
+        localStorage.setItem(KEY, String(prefersCollapsed));
+        applyState();
+      });
+    }
   }
   if (d.readyState === "loading") d.addEventListener("DOMContentLoaded", init);
   else init();
