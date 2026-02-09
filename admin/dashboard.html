@@ -46,13 +46,21 @@
             <div id="kpi-pending" style="font-size:28px;font-weight:700">—</div>
           </div>
           <div class="card">
-            <div class="card-title">Resolved Tickets</div>
-            <div id="kpi-resolved" style="font-size:28px;font-weight:700">—</div>
-          </div>
-          <div class="card">
-            <div class="card-title">AVG First Response (h)</div>
+            <div class="card-title">Avg First Response (7d)</div>
             <div id="kpi-frt" style="font-size:28px;font-weight:700">—</div>
           </div>
+          <div class="card">
+            <div class="card-title">Avg Resolution (7d)</div>
+            <div id="kpi-res" style="font-size:28px;font-weight:700">—</div>
+          </div>
+          <div class="card">
+            <div class="card-title">Overdue (SLA Breach)</div>
+            <div id="kpi-overdue" style="font-size:28px;font-weight:700">—</div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">Recent Activity</div>
+          <div id="activity-list"></div>
         </div>
         <div class="card">
           <div class="card-title">My Tickets</div>
@@ -78,41 +86,82 @@
     </div>
   </div>
 <script src="../js/storage.js"></script>
+<script src="../js/utils.js"></script>
 <script src="../js/seed.js"></script>
 <script>
   (function () {
     var S = window.PulseDeskStorage;
     if (!S) return;
+    var U = window.PulseDeskUtils || { formatDuration: function(x){ return String(x); }, daysAgoISO: function(){ return new Date(0).toISOString(); } };
     var $open = document.getElementById("kpi-open");
     var $pending = document.getElementById("kpi-pending");
-    var $resolved = document.getElementById("kpi-resolved");
     var $frt = document.getElementById("kpi-frt");
+    var $res = document.getElementById("kpi-res");
+    var $overdue = document.getElementById("kpi-overdue");
     var $myTbody = document.querySelector(".card:last-of-type tbody");
     var $myEmpty = document.getElementById("my-empty");
+    var $activity = document.getElementById("activity-list");
     function shortId(id){ id=String(id||""); return id.length>6?id.slice(-6):id; }
     function labelStatus(v){ var m={open:"Open", in_progress:"Pending", resolved:"Resolved", closed:"Closed"}; return m[v]||v||""; }
     function clsStatus(v){ var m={open:"open", in_progress:"pending", resolved:"resolved", closed:"closed"}; return m[v]||"open"; }
     function fmtDate(s){ try{ return new Date(s).toLocaleString(); }catch(e){ return s||""; } }
-    function hoursBetween(a,b){ var da=new Date(a).getTime(); var db=new Date(b).getTime(); if (isNaN(da)||isNaN(db)) return null; return (db-da)/36e5; }
+    function msBetween(a,b){ var da=new Date(a).getTime(); var db=new Date(b).getTime(); if (isNaN(da)||isNaN(db)) return null; return (db-da); }
     function get(){
-      return S.getTickets().map(function(t){ return Object.assign({ firstResponseAt: t.firstResponseAt || null, resolvedAt: t.resolvedAt || null }, t); });
+      return S.getTickets().map(function(t){ return Object.assign({ resolvedAt: t.resolvedAt || null }, t); });
+    }
+    function firstAgentReplyAt(t){
+      var cs = Array.isArray(t.comments) ? t.comments.slice() : [];
+      cs.sort(function(a,b){ return new Date(a.at).getTime() - new Date(b.at).getTime(); });
+      for (var i=0;i<cs.length;i++){
+        if (String(cs[i].author||"") === "Agent") return cs[i].at;
+      }
+      return null;
     }
     function renderKPIs(list){
       var open = list.filter(function(t){ return t.status==="open"; }).length;
       var pending = list.filter(function(t){ return t.status==="in_progress"; }).length;
-      var resolved = list.filter(function(t){ return t.status==="resolved"; }).length;
-      var diffs = list.map(function(t){
-        if (t.firstResponseAt && t.createdAt) {
-          var h = hoursBetween(t.createdAt, t.firstResponseAt);
-          return h!=null ? h : null;
+      var since = U.daysAgoISO(7);
+      var frTickets = list.filter(function(t){ return t.createdAt && (new Date(t.createdAt).getTime() >= new Date(since).getTime()); });
+      var frMs = frTickets.map(function(t){
+        var fr = firstAgentReplyAt(t);
+        if (fr) {
+          var ms = msBetween(t.createdAt, fr);
+          return ms!=null ? ms : null;
         }
         return null;
-      }).filter(function(v){ return v!=null; });
-      var avg = diffs.length ? (diffs.reduce(function(a,b){return a+b;},0)/diffs.length) : null;
+      }).filter(function(v){ return v!=null && v>=0; });
+      var frAvg = frMs.length ? Math.round(frMs.reduce(function(a,b){return a+b;},0) / frMs.length) : null;
+      var resTickets = list.filter(function(t){ return t.resolvedAt && (new Date(t.resolvedAt).getTime() >= new Date(since).getTime()); });
+      var resMs = resTickets.map(function(t){
+        var ms = msBetween(t.createdAt, t.resolvedAt);
+        return ms!=null ? ms : null;
+      }).filter(function(v){ return v!=null && v>=0; });
+      var resAvg = resMs.length ? Math.round(resMs.reduce(function(a,b){return a+b;},0) / resMs.length) : null;
+      var now = Date.now();
+      var overdue = list.filter(function(t){
+        return t.status!=="resolved" && t.createdAt && (now - new Date(t.createdAt).getTime() > 48*3600*1000);
+      }).length;
       $open.textContent = String(open);
       $pending.textContent = String(pending);
-      $resolved.textContent = String(resolved);
-      $frt.textContent = avg==null ? "—" : (Math.round(avg*10)/10);
+      $frt.textContent = frAvg==null ? "—" : U.formatDuration(frAvg);
+      $res.textContent = resAvg==null ? "—" : U.formatDuration(resAvg);
+      $overdue.textContent = String(overdue);
+    }
+    function renderActivity(){
+      var evts = S.getRecentEvents(6);
+      if (!evts || evts.length===0){ $activity.innerHTML = "<div class='muted'>No recent activity.</div>"; return; }
+      var html = evts.map(function(e){
+        var label = "";
+        if (e.type==="status") label = "Status: "+(e.from||"")+" → "+(e.to||"");
+        else if (e.type==="priority") label = "Priority: "+(e.from||"")+" → "+(e.to||"");
+        else if (e.type==="assignee") label = "Assignee: "+(e.from||"")+" → "+(e.to||"");
+        else label = String(e.type||"Event");
+        return "<div style='display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid #e5e7eb;'>"
+          +"<div><strong>#"+shortId(e.ticketId)+"</strong> "+label+"</div>"
+          +"<div class='muted'>"+fmtDate(e.at)+"</div>"
+        +"</div>";
+      }).join("");
+      $activity.innerHTML = html;
     }
     function renderMy(list){
       var currentAgent = "You";
@@ -137,6 +186,7 @@
     }
     var list = get();
     renderKPIs(list);
+    renderActivity();
     renderMy(list);
   })();
 </script>

@@ -320,6 +320,17 @@
           hist.push({ type: "note", at: new Date().toISOString() });
         }
         var updates = { id: id, status: st, priority: pr, assignee: asn, internalNotes: noteVal, internalNote: noteVal, history: hist };
+        var events = Array.isArray(t.events)? t.events.slice() : [];
+        if (String(t.status) !== String(st)){
+          events.push({ id: "e_"+Date.now().toString(36), at: new Date().toISOString(), type: "status", from: statusLabel(t.status), to: statusLabel(st) });
+        }
+        if (String(t.assignee || "") !== String(asn)){
+          events.push({ id: "e_"+Date.now().toString(36), at: new Date().toISOString(), type: "assignee", from: (t.assignee || "Unassigned"), to: (asn || "Unassigned") });
+        }
+        if (String(t.priority || "") !== String(pr)){
+          events.push({ id: "e_"+Date.now().toString(36), at: new Date().toISOString(), type: "priority", from: priorityLabel(t.priority), to: priorityLabel(pr) });
+        }
+        updates.events = events;
         if (!t.firstResponseAt && String(t.status)==="open" && String(st)!=="open"){
           updates.firstResponseAt = new Date().toISOString();
           hist.push({ type: "first_response", at: updates.firstResponseAt });
@@ -327,6 +338,9 @@
         if (!t.resolvedAt && String(st)==="resolved"){
           updates.resolvedAt = new Date().toISOString();
           hist.push({ type: "resolved", at: updates.resolvedAt });
+        }
+        if (t.resolvedAt && String(st)!=="resolved"){
+          updates.resolvedAt = null;
         }
         persistAndAnnounce(updates);
         $sumStatus.innerHTML = "<span class='badge badge-status "+statusClass(st)+"'>"+statusLabel(st)+"</span>";

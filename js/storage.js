@@ -30,9 +30,33 @@
     const arr = getTickets();
     const idx = arr.findIndex(function (t) { return String(t && t.id) === String(updated && updated.id); });
     if (idx === -1) return null;
-    arr[idx] = Object.assign({}, arr[idx], updated);
+    const prev = arr[idx] || {};
+    const next = Object.assign({}, prev, updated);
+    const prevStatus = String(prev.status || "");
+    const nextStatus = String(next.status || "");
+    if (nextStatus === "resolved" && !next.resolvedAt) {
+      next.resolvedAt = new Date().toISOString();
+    }
+    if (prevStatus === "resolved" && nextStatus !== "resolved" && next.resolvedAt) {
+      next.resolvedAt = null;
+    }
+    arr[idx] = next;
     saveTickets(arr);
     return arr[idx];
   }
-  w.PulseDeskStorage = { KEY, getTickets, saveTickets, addTicket, getTicketById, updateTicket };
+  function getRecentEvents(limit) {
+    const list = getTickets();
+    const evts = [];
+    list.forEach(function (t) {
+      const events = Array.isArray(t.events) ? t.events : [];
+      events.forEach(function (e) {
+        evts.push(Object.assign({ ticketId: t.id }, e));
+      });
+    });
+    evts.sort(function (a, b) {
+      return new Date(b.at).getTime() - new Date(a.at).getTime();
+    });
+    return (limit && limit > 0) ? evts.slice(0, limit) : evts;
+  }
+  w.PulseDeskStorage = { KEY, getTickets, saveTickets, addTicket, getTicketById, updateTicket, getRecentEvents };
 })(window);
