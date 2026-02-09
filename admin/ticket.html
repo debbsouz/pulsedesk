@@ -16,7 +16,7 @@
       </div>
       <nav class="nav">
         <a href="./dashboard.html">Dashboard</a>
-        <a href="./tickets.html">Tickets</a>
+        <a class="active" href="./tickets.html">Tickets</a>
         <a href="./new-ticket.html">New Ticket</a>
         <a href="#">Settings</a>
         <a href="#">Logout</a>
@@ -39,7 +39,7 @@
         <div id="not-found" class="card" style="display:none">
           <h2>Ticket not found</h2>
           <div style="height:12px"></div>
-          <a class="button" href="./dashboard.html">Back to dashboard</a>
+          <a class="button" href="./tickets.html">Back to tickets</a>
         </div>
         <div id="detail" style="display:none">
           <div class="card" id="header-card">
@@ -72,13 +72,21 @@
               </select>
             </div>
             <div class="field">
+              <label class="label" for="priority">Priority</label>
+              <select class="select" id="priority">
+                <option value="low">Low</option>
+                <option value="medium">Medium</option>
+                <option value="high">High</option>
+                <option value="urgent">Urgent</option>
+              </select>
+            </div>
+            <div class="field">
               <label class="label" for="assignee">Assign to</label>
               <select class="select" id="assignee">
                 <option value="">Unassigned</option>
                 <option>John</option>
-                <option>Anna</option>
-                <option>Mike</option>
                 <option>Sarah</option>
+                <option>Mike</option>
               </select>
             </div>
             <div class="field">
@@ -86,7 +94,33 @@
               <textarea class="textarea" id="note" placeholder="Add internal note"></textarea>
             </div>
             <div class="actions">
-              <button class="button" id="save">Save</button>
+              <button class="button" id="save">Save changes</button>
+              <a class="button secondary" href="./tickets.html">Back to Tickets</a>
+            </div>
+          </div>
+          <div class="split">
+            <div class="card">
+              <div class="card-title">Conversation</div>
+              <div id="comments"></div>
+              <div style="height:12px"></div>
+              <div class="field">
+                <label class="label" for="c-author">Author</label>
+                <select class="select" id="c-author">
+                  <option>Requester</option>
+                  <option>Agent</option>
+                </select>
+              </div>
+              <div class="field">
+                <label class="label" for="c-text">Message</label>
+                <textarea class="textarea" id="c-text" placeholder="Write a comment"></textarea>
+              </div>
+              <div class="actions">
+                <button class="button" id="post-comment">Post comment</button>
+              </div>
+            </div>
+            <div class="card">
+              <div class="card-title">Attachments</div>
+              <div id="attachments"></div>
             </div>
           </div>
           <div class="card">
@@ -119,10 +153,15 @@
     var $note = document.getElementById("note");
     var $status = document.getElementById("status");
     var $assignee = document.getElementById("assignee");
-    var $priority = null;
+    var $priority = document.getElementById("priority");
     var $save = document.getElementById("save");
     var $hist = document.getElementById("history");
     var $toast = document.getElementById("toast");
+    var $comments = document.getElementById("comments");
+    var $cAuthor = document.getElementById("c-author");
+    var $cText = document.getElementById("c-text");
+    var $post = document.getElementById("post-comment");
+    var $attachments = document.getElementById("attachments");
     function shortId(s) { s = String(s||""); return s.length>6?s.slice(-6):s; }
     function formatDate(s) { try { var d = new Date(s); return d.toLocaleString(); } catch(e){ return s||""; } }
     function statusLabel(v){ var m={open:"Open", in_progress:"Pending", resolved:"Resolved", closed:"Closed"}; return m[v]||v||""; }
@@ -141,7 +180,7 @@
         if (h && h.type) return h;
         return { type: "event", message: String(h && h.action || "updated"), at: h && h.at ? h.at : new Date().toISOString() };
       });
-      return {
+      var out = {
         id: t.id,
         createdAt: t.createdAt || new Date().toISOString(),
         subject: subject,
@@ -151,9 +190,15 @@
         priority: t.priority || "low",
         status: t.status || "open",
         assignee: t.assignee || "",
-        internalNote: t.internalNote || "",
-        history: mapped
+        internalNotes: t.internalNotes || t.internalNote || "",
+        history: mapped,
+        comments: Array.isArray(t.comments) ? t.comments : [],
+        attachments: Array.isArray(t.attachments) ? t.attachments : []
       };
+      if (!out.history.some(function(e){ return e && e.type==="created"; })) {
+        out.history.unshift({ type: "created", at: out.createdAt });
+      }
+      return out;
     }
     function load(){
       var t = S.getTicketById(id);
@@ -169,10 +214,13 @@
       $sumCategory.textContent = t.category || "—";
       $sumEmail.textContent = t.requesterEmail || "—";
       $desc.textContent = t.description || "—";
-      $note.value = t.internalNote || "";
+      $note.value = t.internalNotes || "";
       $status.value = t.status;
+      $priority.value = t.priority;
       $assignee.value = t.assignee || "";
       renderHistory(t.history);
+      renderComments(t.comments);
+      renderAttachments(t.attachments);
     }
     function renderHistory(list){
       if (!list || list.length===0){ $hist.innerHTML = "<div class='muted'>No history yet.</div>"; return; }
@@ -180,11 +228,62 @@
         return new Date(b.at).getTime() - new Date(a.at).getTime();
       }).map(function(h){
         var when = formatDate(h.at);
-        var msg = h.message || h.action || "";
         var type = h.type || "event";
-        return "<div class='timeline-item'><div class='dot'></div><div class='content'><div class='time'>"+when+"</div><div class='msg'>"+type+": "+msg+"</div></div></div>";
+        var msg = "";
+        if (type === "created") msg = "Ticket created";
+        else if (type === "status") msg = "Status: " + (h.from || "") + " → " + (h.to || "");
+        else if (type === "priority") msg = "Priority: " + (h.from || "") + " → " + (h.to || "");
+        else if (type === "assignee") msg = "Assignee: " + (h.from || "Unassigned") + " → " + (h.to || "Unassigned");
+        else if (type === "note") msg = "Internal note updated";
+        else msg = h.message || h.action || "";
+        return "<div class='timeline-item'><div class='dot'></div><div class='content'><div class='time'>"+when+"</div><div class='msg'>"+msg+"</div></div></div>";
       }).join("");
       $hist.innerHTML = html;
+    }
+    function renderComments(list){
+      if (!list || list.length===0){ $comments.innerHTML = "<div class='muted'>No comments yet.</div>"; return; }
+      var html = list.slice().sort(function(a,b){
+        return new Date(a.at).getTime() - new Date(b.at).getTime();
+      }).map(function(c){
+        return "<div style='margin-bottom:12px'>"
+          +"<div style='display:flex;justify-content:space-between'><strong>"+(c.author||"")+"</strong><span class='muted'>"+formatDate(c.at)+"</span></div>"
+          +"<div>"+(c.text||"")+"</div>"
+        +"</div>";
+      }).join("");
+      $comments.innerHTML = html;
+    }
+    function prettySize(bytes){
+      var b = Number(bytes||0); if (b<1024) return b+" B"; var kb=b/1024; if (kb<1024) return Math.round(kb)+" KB"; var mb=kb/1024; return (Math.round(mb*10)/10)+" MB";
+    }
+    function renderAttachments(list){
+      if (!list || list.length===0){ $attachments.innerHTML = "<div class='muted'>No attachments.</div>"; return; }
+      var html = list.slice().sort(function(a,b){
+        return new Date(b.at).getTime() - new Date(a.at).getTime();
+      }).map(function(a,i){
+        return "<div style='display:flex;justify-content:space-between;align-items:center;margin-bottom:8px'>"
+          +"<div><div><strong>"+(a.name||"")+"</strong></div>"
+          +"<div class='muted'>"+(a.type||"")+", "+prettySize(a.size)+" • "+formatDate(a.at)+"</div></div>"
+          +"<div><button class='button secondary' data-url='"+(a.dataUrl||"")+"' data-type='"+(a.type||"")+"' data-name='"+(a.name||"")+"' onclick=''>Open</button></div>"
+        +"</div>";
+      }).join("");
+      $attachments.innerHTML = html;
+      Array.prototype.forEach.call($attachments.querySelectorAll("button"), function(btn){
+        btn.addEventListener("click", function(){
+          var url = btn.getAttribute("data-url")||"";
+          var type = btn.getAttribute("data-type")||"";
+          var name = btn.getAttribute("data-name")||"file";
+          if (type.indexOf("image/")===0){
+            openImagePreview(url, name);
+          } else {
+            var a = document.createElement("a");
+            a.href = url;
+            a.download = name;
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+          }
+        });
+      });
     }
     function saveDisabled(btn, disabled){
       btn.disabled = !!disabled;
@@ -195,42 +294,91 @@
       showToast("Saved");
       var t = normalizeTicket(r);
       renderHistory(t.history);
+      renderComments(t.comments);
+      renderAttachments(t.attachments);
     }
     $save.addEventListener("click", function(){
       saveDisabled($save, true);
       var st = $status.value;
       var asn = $assignee.value || "";
       var noteVal = $note.value || "";
+      var pr = $priority.value;
       setTimeout(function(){
         var t = S.getTicketById(id);
         if (!t){ saveDisabled($save,false); return; }
         var hist = Array.isArray(t.history)? t.history : [];
         if (String(t.status) !== String(st)){
-          hist.push({ type: "status", message: "Status changed to "+statusLabel(st), at: new Date().toISOString() });
+          hist.push({ type: "status", from: statusLabel(t.status), to: statusLabel(st), at: new Date().toISOString() });
         }
         if (String(t.assignee || "") !== String(asn)){
-          hist.push({ type: "assignee", message: "Assigned to "+(asn || "Unassigned"), at: new Date().toISOString() });
+          hist.push({ type: "assignee", from: (t.assignee || "Unassigned"), to: (asn || "Unassigned"), at: new Date().toISOString() });
+        }
+        if (String(t.priority || "") !== String(pr)){
+          hist.push({ type: "priority", from: priorityLabel(t.priority), to: priorityLabel(pr), at: new Date().toISOString() });
         }
         if (String(t.internalNote || "") !== String(noteVal)){
-          hist.push({ type: "note", message: "Internal note updated", at: new Date().toISOString() });
+          hist.push({ type: "note", at: new Date().toISOString() });
         }
-        var updates = { id: id, status: st, assignee: asn, internalNote: noteVal, history: hist };
+        var updates = { id: id, status: st, priority: pr, assignee: asn, internalNotes: noteVal, internalNote: noteVal, history: hist };
         if (!t.firstResponseAt && String(t.status)==="open" && String(st)!=="open"){
           updates.firstResponseAt = new Date().toISOString();
-          hist.push({ type: "first_response", message: "First response recorded", at: updates.firstResponseAt });
+          hist.push({ type: "first_response", at: updates.firstResponseAt });
         }
         if (!t.resolvedAt && String(st)==="resolved"){
           updates.resolvedAt = new Date().toISOString();
-          hist.push({ type: "resolved", message: "Ticket resolved", at: updates.resolvedAt });
+          hist.push({ type: "resolved", at: updates.resolvedAt });
         }
         persistAndAnnounce(updates);
         $sumStatus.innerHTML = "<span class='badge badge-status "+statusClass(st)+"'>"+statusLabel(st)+"</span>";
+        $sumPriority.innerHTML = "<span class='badge badge-priority "+priorityClass(pr)+"'>"+priorityLabel(pr)+"</span>";
         $badges.innerHTML = "<span class='badge badge-status "+statusClass(st)+"'>"+statusLabel(st)+"</span>";
         saveDisabled($save, false);
       }, 500);
     });
+    function rid(){ return "c_"+Date.now().toString(36)+Math.random().toString(36).slice(2,8); }
+    $post.addEventListener("click", function(){
+      var txt = ($cText.value||"").trim();
+      if (!txt){ $cText.focus(); return; }
+      saveDisabled($post, true);
+      var author = $cAuthor.value || "Agent";
+      setTimeout(function(){
+        var t = S.getTicketById(id);
+        if (!t){ saveDisabled($post,false); return; }
+        var comments = Array.isArray(t.comments)? t.comments.slice() : [];
+        comments.push({ id: rid(), at: new Date().toISOString(), author: author, text: txt });
+        persistAndAnnounce({ id: id, comments: comments });
+        showToast("Comment posted");
+        $cText.value = "";
+        $cText.focus();
+        saveDisabled($post, false);
+      }, 300);
+    });
+    function openImagePreview(url, name){
+      var overlay = document.getElementById("preview-overlay");
+      var img = document.getElementById("preview-img");
+      var title = document.getElementById("preview-title");
+      img.src = url;
+      title.textContent = name || "Preview";
+      overlay.style.display = "flex";
+    }
+    function closePreview(){
+      var overlay = document.getElementById("preview-overlay");
+      var img = document.getElementById("preview-img");
+      img.src = "";
+      overlay.style.display = "none";
+    }
+    window.closePreview = closePreview;
     load();
   })();
 </script>
+<div id="preview-overlay" class="modal-overlay" onclick="closePreview()" aria-hidden="true">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-header">
+      <div id="preview-title">Preview</div>
+      <button class="button secondary" onclick="closePreview()">Close</button>
+    </div>
+    <img id="preview-img" alt="Attachment preview">
+  </div>
+</div>
 </body>
 </html>

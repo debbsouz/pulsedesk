@@ -75,5 +75,64 @@
       </main>
     </div>
   </div>
+<script src="../js/storage.js"></script>
+<script>
+  (function(){
+    var S = window.PulseDeskStorage;
+    if (!S) return;
+    var $subject = document.getElementById("subject");
+    var $description = document.getElementById("description");
+    var $category = document.getElementById("category");
+    var $priority = document.getElementById("priority");
+    var $file = document.getElementById("attachment");
+    var $submit = document.querySelector(".actions .button");
+    function rid(){ return "t_"+Date.now().toString(36)+Math.random().toString(36).slice(2,8); }
+    function buildAttachment(file, cb){
+      if (!file) return cb(null);
+      var reader = new FileReader();
+      reader.onload = function(){
+        cb({
+          id: "a_"+Date.now().toString(36)+Math.random().toString(36).slice(2,8),
+          name: file.name,
+          type: file.type || "application/octet-stream",
+          size: file.size || 0,
+          dataUrl: reader.result,
+          at: new Date().toISOString()
+        });
+      };
+      reader.onerror = function(){ cb(null); };
+      reader.readAsDataURL(file);
+    }
+    $submit.addEventListener("click", function(){
+      var subject = ($subject.value||"").trim();
+      var description = ($description.value||"").trim();
+      var category = $category.value || "";
+      var prLabel = $priority.value || "Low";
+      var priority = String(prLabel).toLowerCase();
+      var id = rid();
+      var f = ($file.files && $file.files[0]) ? $file.files[0] : null;
+      buildAttachment(f, function(att){
+        var attachments = att ? [att] : [];
+        var ticket = {
+          id: id,
+          title: subject,
+          subject: subject,
+          description: description,
+          category: category,
+          priority: priority,
+          status: "open",
+          assignee: "",
+          createdAt: new Date().toISOString(),
+          internalNotes: "",
+          comments: [],
+          attachments: attachments,
+          history: [{ type: "created", at: new Date().toISOString() }]
+        };
+        S.addTicket(ticket);
+        window.location.href = "./ticket.html?id="+encodeURIComponent(id);
+      });
+    });
+  })();
+</script>
 </body>
 </html>
