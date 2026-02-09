@@ -1,9 +1,13 @@
-/* Theme tokens; base.css defines defaults. Dark overrides below. */
+/* Theme tokens; base.css defines light defaults. Dark overrides below. */
 [data-theme="dark"] {
   --bg: #0b1220;
-  --text: #e5e7eb;
+  --text: #e6edf7;
   --muted: #93a2b7;
-  --border: #24303f;
-  --card-bg: #111827;
+  --border: rgba(148, 163, 184, 0.14);
+  --card-bg: #0f172a;
+  --sidebar-bg: #0f172a;
   --primary: #60a5fa;
+  --shadow: 0 10px 30px -10px rgba(2, 6, 23, 0.55), 0 8px 12px -8px rgba(2, 6, 23, 0.45);
+  --shadow-soft: 0 6px 20px -10px rgba(2, 6, 23, 0.45);
+  --focus-ring: 0 0 0 3px rgba(96, 165, 250, 0.35);
 }
