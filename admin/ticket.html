@@ -214,7 +214,16 @@
         if (String(t.internalNote || "") !== String(noteVal)){
           hist.push({ type: "note", message: "Internal note updated", at: new Date().toISOString() });
         }
-        persistAndAnnounce({ id: id, status: st, assignee: asn, internalNote: noteVal, history: hist });
+        var updates = { id: id, status: st, assignee: asn, internalNote: noteVal, history: hist };
+        if (!t.firstResponseAt && String(t.status)==="open" && String(st)!=="open"){
+          updates.firstResponseAt = new Date().toISOString();
+          hist.push({ type: "first_response", message: "First response recorded", at: updates.firstResponseAt });
+        }
+        if (!t.resolvedAt && String(st)==="resolved"){
+          updates.resolvedAt = new Date().toISOString();
+          hist.push({ type: "resolved", message: "Ticket resolved", at: updates.resolvedAt });
+        }
+        persistAndAnnounce(updates);
         $sumStatus.innerHTML = "<span class='badge badge-status "+statusClass(st)+"'>"+statusLabel(st)+"</span>";
         $badges.innerHTML = "<span class='badge badge-status "+statusClass(st)+"'>"+statusLabel(st)+"</span>";
         saveDisabled($save, false);

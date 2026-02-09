@@ -39,33 +39,106 @@
         <div class="cards">
           <div class="card">
             <div class="card-title">Open Tickets</div>
+            <div id="kpi-open" style="font-size:28px;font-weight:700">—</div>
           </div>
           <div class="card">
             <div class="card-title">Pending Tickets</div>
+            <div id="kpi-pending" style="font-size:28px;font-weight:700">—</div>
           </div>
           <div class="card">
-            <div class="card-title">Average Response Time</div>
+            <div class="card-title">Resolved Tickets</div>
+            <div id="kpi-resolved" style="font-size:28px;font-weight:700">—</div>
           </div>
           <div class="card">
-            <div class="card-title">Customer Satisfaction</div>
+            <div class="card-title">AVG First Response (h)</div>
+            <div id="kpi-frt" style="font-size:28px;font-weight:700">—</div>
           </div>
         </div>
         <div class="card">
-          <div class="card-title">Recent Activity</div>
+          <div class="card-title">My Tickets</div>
           <table class="table">
             <thead>
               <tr>
                 <th>ID</th>
                 <th>Subject</th>
                 <th>Status</th>
-                <th>Updated</th>
+                <th>Created</th>
+                <th>Actions</th>
               </tr>
             </thead>
             <tbody></tbody>
           </table>
+          <div id="my-empty" style="display:none; padding:16px;">
+            <p class="muted">No tickets assigned to you.</p>
+            <div style="height:12px"></div>
+            <a class="button secondary" href="./tickets.html">Go to Tickets</a>
+          </div>
         </div>
       </main>
     </div>
   </div>
+<script src="../js/storage.js"></script>
+<script src="../js/seed.js"></script>
+<script>
+  (function () {
+    var S = window.PulseDeskStorage;
+    if (!S) return;
+    var $open = document.getElementById("kpi-open");
+    var $pending = document.getElementById("kpi-pending");
+    var $resolved = document.getElementById("kpi-resolved");
+    var $frt = document.getElementById("kpi-frt");
+    var $myTbody = document.querySelector(".card:last-of-type tbody");
+    var $myEmpty = document.getElementById("my-empty");
+    function shortId(id){ id=String(id||""); return id.length>6?id.slice(-6):id; }
+    function labelStatus(v){ var m={open:"Open", in_progress:"Pending", resolved:"Resolved", closed:"Closed"}; return m[v]||v||""; }
+    function clsStatus(v){ var m={open:"open", in_progress:"pending", resolved:"resolved", closed:"closed"}; return m[v]||"open"; }
+    function fmtDate(s){ try{ return new Date(s).toLocaleString(); }catch(e){ return s||""; } }
+    function hoursBetween(a,b){ var da=new Date(a).getTime(); var db=new Date(b).getTime(); if (isNaN(da)||isNaN(db)) return null; return (db-da)/36e5; }
+    function get(){
+      return S.getTickets().map(function(t){ return Object.assign({ firstResponseAt: t.firstResponseAt || null, resolvedAt: t.resolvedAt || null }, t); });
+    }
+    function renderKPIs(list){
+      var open = list.filter(function(t){ return t.status==="open"; }).length;
+      var pending = list.filter(function(t){ return t.status==="in_progress"; }).length;
+      var resolved = list.filter(function(t){ return t.status==="resolved"; }).length;
+      var diffs = list.map(function(t){
+        if (t.firstResponseAt && t.createdAt) {
+          var h = hoursBetween(t.createdAt, t.firstResponseAt);
+          return h!=null ? h : null;
+        }
+        return null;
+      }).filter(function(v){ return v!=null; });
+      var avg = diffs.length ? (diffs.reduce(function(a,b){return a+b;},0)/diffs.length) : null;
+      $open.textContent = String(open);
+      $pending.textContent = String(pending);
+      $resolved.textContent = String(resolved);
+      $frt.textContent = avg==null ? "—" : (Math.round(avg*10)/10);
+    }
+    function renderMy(list){
+      var currentAgent = "You";
+      var mine = list.filter(function(t){ return String(t.assignee||"") === currentAgent; });
+      if (mine.length===0){
+        $myTbody.innerHTML = "";
+        $myEmpty.style.display = "block";
+        return;
+      }
+      $myEmpty.style.display = "none";
+      var html = mine.slice(0,8).map(function(t){
+        var href = "./ticket.html?id="+encodeURIComponent(String(t.id));
+        return "<tr>"
+          +"<td>"+shortId(t.id)+"</td>"
+          +"<td>"+(t.title || t.subject || "")+"</td>"
+          +"<td><span class='badge badge-status "+clsStatus(t.status)+"'>"+labelStatus(t.status)+"</span></td>"
+          +"<td>"+fmtDate(t.createdAt)+"</td>"
+          +"<td><a class='button secondary' href='"+href+"'>View</a></td>"
+        +"</tr>";
+      }).join("");
+      $myTbody.innerHTML = html;
+    }
+    var list = get();
+    renderKPIs(list);
+    renderMy(list);
+  })();
+</script>
 </body>
 </html>
