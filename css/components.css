@@ -186,13 +186,13 @@ body.is-expanded .nav .nav-item { justify-content: flex-start; }
 .sidebar-footer .user-name { font-size: 13px; font-weight: 700; color: var(--sidebar-fg); }
 .sidebar-footer .user-email { font-size: 12px; color: rgba(230, 237, 247, 0.8); }
 .sidebar-footer .theme-btn {
-  width: 28px;
-  height: 28px;
+  width: 40px;
+  height: 40px;
   border-radius: 10px;
   border: 1px solid rgba(148,163,184,0.30);
   background: transparent;
-  color: var(--sidebar-fg);
-  display: inline-flex;
+  color: rgba(255,255,255,0.90);
+  display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
@@ -203,20 +203,15 @@ body.is-expanded .nav .nav-item { justify-content: flex-start; }
   background: rgba(148,163,184,0.12);
   border-color: rgba(148,163,184,0.40);
 }
-.sidebar-footer .theme-btn svg { width: 18px; height: 18px; display: block; }
-/* Improve theme icon contrast */
-.sidebar-footer .theme-btn .theme-icon path {
-  stroke: currentColor;
-  stroke-width: 1.8;
+.sidebar-footer .theme-btn:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
 }
-.sidebar-footer .theme-btn .theme-icon .sun,
-.sidebar-footer .theme-btn .theme-icon .moon {
-  fill: none;
+.sidebar-footer .theme-btn .theme-ico {
+  width: 20px;
+  height: 20px;
+  display: inline-block;
 }
-/* Theme icon states */
-.sidebar-footer .theme-btn .moon { display: none; }
-body[data-theme="dark"] .sidebar .theme-btn .sun { display: none; }
-body[data-theme="dark"] .sidebar .theme-btn .moon { display: block; }
 body:not(.is-expanded) .sidebar .sidebar-footer .user-text {
   opacity: 0;
   pointer-events: none;
