@@ -6,7 +6,7 @@
 }
 
 /* Dark theme overrides */
-[data-theme="dark"] {
+body[data-theme="dark"] {
   --bg: #0b1220;
   --text: #e6edf7;
   --muted: #93a2b7;

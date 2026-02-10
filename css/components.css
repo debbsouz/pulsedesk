@@ -22,8 +22,8 @@ body.is-expanded .sidebar { width: 260px; }
 .brand {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 18px 18px;
+  gap: 8px;
+  padding: 12px 12px;
   border-bottom: 1px solid var(--border);
 }
 
@@ -33,7 +33,7 @@ body.is-expanded .sidebar { width: 260px; }
 }
 
 .brand .name {
-  font-size: 17px;
+  font-size: 19px;
   font-weight: 800;
   color: var(--sidebar-fg);
   transition: opacity 160ms var(--ease);
@@ -166,25 +166,28 @@ body.is-expanded .nav .nav-item { justify-content: flex-start; }
 .sidebar-footer .footer-inner {
   display: flex;
   align-items: center;
-  gap: 10px;
+  justify-content: space-between;
+  gap: 8px;
+  min-height: 44px;
 }
 .sidebar-footer .avatar {
-  width: 30px;
-  height: 30px;
+  width: 28px;
+  height: 28px;
   border-radius: 50%;
   background: rgba(148, 163, 184, 0.28);
   display: grid;
   place-items: center;
   font-weight: 600;
   color: var(--muted);
+  object-fit: cover;
+  flex: 0 0 auto;
 }
 .sidebar-footer .user-text { display: grid; gap: 2px; }
 .sidebar-footer .user-name { font-size: 13px; font-weight: 700; color: var(--sidebar-fg); }
 .sidebar-footer .user-email { font-size: 12px; color: rgba(230, 237, 247, 0.8); }
 .sidebar-footer .theme-btn {
-  margin-left: auto;
-  width: 30px;
-  height: 30px;
+  width: 28px;
+  height: 28px;
   border-radius: 10px;
   border: 1px solid rgba(148,163,184,0.30);
   background: transparent;
@@ -194,16 +197,26 @@ body.is-expanded .nav .nav-item { justify-content: flex-start; }
   justify-content: center;
   cursor: pointer;
   transition: background 160ms var(--ease), border-color 160ms var(--ease);
+  flex: 0 0 auto;
 }
 .sidebar-footer .theme-btn:hover {
   background: rgba(148,163,184,0.12);
   border-color: rgba(148,163,184,0.40);
 }
 .sidebar-footer .theme-btn svg { width: 18px; height: 18px; display: block; }
+/* Improve theme icon contrast */
+.sidebar-footer .theme-btn .theme-icon path {
+  stroke: currentColor;
+  stroke-width: 1.8;
+}
+.sidebar-footer .theme-btn .theme-icon .sun,
+.sidebar-footer .theme-btn .theme-icon .moon {
+  fill: none;
+}
 /* Theme icon states */
 .sidebar-footer .theme-btn .moon { display: none; }
-html[data-theme="dark"] .sidebar .theme-btn .sun { display: none; }
-html[data-theme="dark"] .sidebar .theme-btn .moon { display: block; }
+body[data-theme="dark"] .sidebar .theme-btn .sun { display: none; }
+body[data-theme="dark"] .sidebar .theme-btn .moon { display: block; }
 body:not(.is-expanded) .sidebar .sidebar-footer .user-text {
   opacity: 0;
   pointer-events: none;
