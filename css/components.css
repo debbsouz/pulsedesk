@@ -2,7 +2,8 @@
   display: flex;
   min-height: 100vh;
   width: 100%;
-  background: var(--bg);
+  background: var(--app-bg);
+  font-family: var(--font-sans);
 }
 
 .sidebar {
@@ -10,7 +11,7 @@
   flex: 0 0 var(--sidebar-w);
   width: var(--sidebar-w);
   height: 100vh;
-  background: linear-gradient(180deg, var(--sidebar-bg) 0%, #0b1323 100%);
+  background: var(--sidebar-bg);
   border-right: 1px solid var(--border);
   display: flex;
   flex-direction: column;
@@ -35,8 +36,8 @@
 .brand {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 12px 12px;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-3);
   border-bottom: 1px solid var(--border);
 }
 
@@ -192,7 +193,7 @@
 .sidebar-footer {
   width: 100%;
   margin-top: auto;
-  padding: 14px 14px;
+  padding: var(--space-3) var(--space-3);
   border-top: 1px solid var(--border);
   background: inherit;
   display: flex;
@@ -340,13 +341,13 @@ body:not(.is-expanded) .sidebar .theme-btn,
   position: sticky;
   top: 0;
   height: var(--topbar-height);
-  background: var(--card-bg);
+  background: var(--topbar-bg);
   border-bottom: 1px solid var(--border);
   box-shadow: none;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 24px;
+  padding: 0 var(--space-6);
   z-index: 10;
 }
 
@@ -471,8 +472,9 @@ body[data-theme="dark"] .theme-toggle .icon-moon { display: block; }
   flex: 1 1 auto;
   min-width: 0;
   overflow: auto;
-  padding: 24px;
+  padding: var(--space-6);
   animation: page-in 320ms var(--ease-out) both;
+  background: var(--app-bg);
 }
 .main > * {
   max-width: var(--content-max);

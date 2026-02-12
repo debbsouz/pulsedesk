@@ -1,0 +1,85 @@
+/* Admin-specific visual styling: teal sidebar + white cards */
+html, body { height: 100%; }
+body { background: var(--app-bg); }
+
+.sidebar .brand { padding: var(--space-4) var(--space-3); gap: var(--space-3); }
+.beta-badge {
+  display: inline-block;
+  font-size: var(--fs-12);
+  line-height: 1;
+  padding: 2px 6px;
+  border-radius: var(--radius-8);
+  color: #d2f1f3;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.12);
+  margin-left: 6px;
+}
+.sidebar .primary-cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin: var(--space-2) var(--space-3) var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-12);
+  width: calc(100% - var(--space-6));
+  color: #0c2a2d;
+  background: #a7f3d0;
+  border: 1px solid rgba(12, 42, 45, 0.12);
+  font-weight: 600;
+}
+.sidebar .nav { padding-top: var(--space-2); }
+.sidebar .nav .nav-item.active {
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.10);
+}
+.sidebar .nav .nav-item:hover {
+  background: rgba(255,255,255,0.06);
+}
+
+.topbar {
+  background: var(--topbar-bg);
+}
+.topbar .icon-button {
+  width: 36px; height: 36px;
+  border-radius: 999px;
+  display: inline-grid; place-items: center;
+  border: 1px solid var(--card-border);
+  background: #fff;
+}
+.topbar-left { display: inline-flex; align-items: center; gap: 12px; }
+.topbar-right { display: inline-flex; align-items: center; gap: var(--space-3); }
+
+.card {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  box-shadow: var(--shadow-sm);
+  border-radius: var(--radius-12);
+}
+.stat-card { padding: var(--space-4); }
+
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  gap: var(--space-4);
+}
+.stats-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-3);
+}
+.dashboard-bottom {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: var(--space-4);
+  margin-top: var(--space-4);
+}
+
+/* Responsive */
+@media (max-width: 1100px){
+  .dashboard-grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 900px){
+  .sidebar { position: fixed; left: -100%; }
+  body[data-offcanvas="open"] .sidebar { left: 0; }
+  .dashboard-bottom { grid-template-columns: 1fr; }
+}

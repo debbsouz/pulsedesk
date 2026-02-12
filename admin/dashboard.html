@@ -7,14 +7,16 @@
   <link rel="stylesheet" href="../css/tokens.css">
   <link rel="stylesheet" href="../css/base.css">
   <link rel="stylesheet" href="../css/components.css">
+  <link rel="stylesheet" href="../css/admin.css">
 </head>
 <body>
   <div class="app-shell">
-    <aside class="sidebar" aria-label="Primary">
+    <aside class="sidebar" aria-label="Primary" id="sidebar">
       <div class="brand">
         <img src="../assets/logo.svg" alt="PulseDesk logo">
-        <span class="name">PulseDesk</span>
+        <span class="name">PulseDesk</span><span class="beta-badge">BETA</span>
       </div>
+      <a class="primary-cta" href="./new-ticket.html">+ Open new ticket</a>
       <nav class="nav">
         <a class="nav-item active" href="./dashboard.html" aria-label="Dashboard" title="Dashboard"><span class="nav-ic" aria-hidden="true"><svg viewBox="0 0 24 24"><path fill="currentColor" d="M4 4h7v7H4V4zm9 0h7v5h-7V4zM4 13h7v7H4v-7zm9-2h7v9h-7v-9z"/></svg></span><span class="nav-label">Dashboard</span></a>
         <a class="nav-item" href="./tickets.html" aria-label="Tickets" title="Tickets"><span class="nav-ic" aria-hidden="true"><svg viewBox="0 0 24 24"><path fill="currentColor" d="M4 6h16v10H7l-3 3V6z"/></svg></span><span class="nav-label">Tickets</span></a>
