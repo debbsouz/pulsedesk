@@ -21,3 +21,17 @@ body[data-theme="dark"] {
   --shadow-soft: 0 6px 20px -10px rgba(2, 6, 23, 0.45);
   --focus-ring: 0 0 0 3px rgba(96, 165, 250, 0.35);
 }
+
+/* Layout variables: single source of truth */
+:root{
+  --sidebar-expanded: 240px;
+  --sidebar-collapsed: 72px;
+  --sidebar-width: var(--sidebar-expanded);
+  --topbar-height: 64px;
+}
+body[data-sidebar="collapsed"]{
+  --sidebar-width: var(--sidebar-collapsed);
+}
+body[data-sidebar="expanded"]{
+  --sidebar-width: var(--sidebar-expanded);
+}
